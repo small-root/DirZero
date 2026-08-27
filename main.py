@@ -4,16 +4,25 @@ from PySide6.QtUiTools import QUiLoader
 import paramiko
 import os
 
-host = "100.94.145.66"
-username = "xiaogen"
-port = 22
+hostA = "100.94.145.66"
+usernamea = "xiaogen"
+porta = 22
+
+hostB = "100.94.227.29"
+usernameb = "xiaogen"
+portb = 22
 
 private_key_path = os.path.expanduser("~/.ssh/id_ed25519")
 private_key = paramiko.Ed25519Key.from_private_key_file(private_key_path)
 
-transport = paramiko.Transport((host, port))
-transport.connect(username=username, pkey=private_key)
-sftp = paramiko.SFTPClient.from_transport(transport)
+transportA = paramiko.Transport((hostA, porta))
+transportA.connect(username=usernamea, pkey=private_key)
+sftpA = paramiko.SFTPClient.from_transport(transportA)
+
+transportB = paramiko.Transport((hostB, portb))
+transportB.connect(username=usernameb, pkey=private_key)
+sftpB = paramiko.SFTPClient.from_transport(transportB)
+
 
 app = QApplication()
 loader = QUiLoader()
@@ -24,13 +33,20 @@ file.open(QFile.ReadOnly)
 window = loader.load(file)
 file.close()
 
-def show_output():
-    files = sftp.listdir(".")
+def show_output_mach_a():
+    files = sftpA.listdir(".")
     window.MachineAOutput.setPlainText(str(files))
 
-window.ListfilesinA.clicked.connect(show_output)
+def show_output_mach_b():
+    files = sftpB.listdir(".")
+    window.MachineBOutput.setPlainText(str(files))
+
+window.ListfilesinA.clicked.connect(show_output_mach_a)
+window.ListfilesinB.clicked.connect(show_output_mach_b)
 window.show()
 app.exec()
 
-sftp.close()
-transport.close()
+sftpA.close()
+transportA.close()
+sftpB.close()
+transportB.close()
