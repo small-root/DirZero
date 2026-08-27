@@ -14,12 +14,12 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QPlainTextEdit" name="plainTextEdit">
+   <widget class="QPlainTextEdit" name="MachineA">
     <property name="geometry">
      <rect>
-      <x>10</x>
+      <x>20</x>
       <y>10</y>
-      <width>181</width>
+      <width>211</width>
       <height>31</height>
      </rect>
     </property>
@@ -27,12 +27,12 @@
      <string>Machine A: [100.94.145.66]</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton">
+   <widget class="QPushButton" name="ListfilesinA">
     <property name="geometry">
      <rect>
-      <x>10</x>
+      <x>20</x>
       <y>50</y>
-      <width>181</width>
+      <width>211</width>
       <height>34</height>
      </rect>
     </property>
@@ -40,12 +40,12 @@
      <string>List Directories</string>
     </property>
    </widget>
-   <widget class="QPlainTextEdit" name="plainTextEdit_2">
+   <widget class="QPlainTextEdit" name="MachineB">
     <property name="geometry">
      <rect>
-      <x>210</x>
+      <x>300</x>
       <y>10</y>
-      <width>181</width>
+      <width>191</width>
       <height>31</height>
      </rect>
     </property>
@@ -53,17 +53,63 @@
      <string>Machine B: [100.94.227.29]</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton_2">
+   <widget class="QPushButton" name="ListfilesinB">
     <property name="geometry">
      <rect>
-      <x>210</x>
+      <x>300</x>
       <y>50</y>
-      <width>181</width>
+      <width>191</width>
       <height>34</height>
      </rect>
     </property>
     <property name="text">
      <string>List Directories</string>
+    </property>
+   </widget>
+   <widget class="Line" name="line">
+    <property name="geometry">
+     <rect>
+      <x>250</x>
+      <y>0</y>
+      <width>20</width>
+      <height>601</height>
+     </rect>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Orientation::Vertical</enum>
+    </property>
+   </widget>
+   <widget class="Line" name="line_2">
+    <property name="geometry">
+     <rect>
+      <x>530</x>
+      <y>-10</y>
+      <width>16</width>
+      <height>591</height>
+     </rect>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Orientation::Vertical</enum>
+    </property>
+   </widget>
+   <widget class="QPlainTextEdit" name="MachineAOutput">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>100</y>
+      <width>211</width>
+      <height>451</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QPlainTextEdit" name="MachineBOutput">
+    <property name="geometry">
+     <rect>
+      <x>300</x>
+      <y>100</y>
+      <width>191</width>
+      <height>451</height>
+     </rect>
     </property>
    </widget>
   </widget>
