@@ -3,6 +3,26 @@ from PySide6.QtCore import QFile
 from PySide6.QtUiTools import QUiLoader
 import paramiko
 import os
+import subprocess
+
+tailResults = subprocess.run(
+        ["tailscale", "status"],
+        capture_output=True,
+        text=True
+        )
+
+devices = []
+
+for i in tailResults.stdout.splitlines():
+    if "active" in i:
+        parts = i.split()
+        device = {
+                "ip": parts[0],
+                "name": parts[1]
+                }
+        devices.append(device)
+
+print(devices)
 
 hostA = "100.94.145.66"
 usernamea = "xiaogen"
