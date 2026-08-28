@@ -13,16 +13,30 @@ tailResults = subprocess.run(
 
 devices = []
 
-for i in tailResults.stdout.splitlines():
-    if "active" in i:
+lines = tailResults.stdout.splitlines()
+
+parts = lines[0].split()
+connectedMachines = len(devices)
+
+ownMachine = {
+        "ip": parts[0],
+        "machine": parts[1]
+        }
+
+devices.append(ownMachine)
+
+for i in lines[1:]:
+    if "offline" not in i:
         parts = i.split()
         device = {
                 "ip": parts[0],
-                "name": parts[1]
+                "machine": parts[1]
                 }
         devices.append(device)
 
 print(devices)
+print(len(devices))
+
 
 hostA = "100.94.145.66"
 usernamea = "xiaogen"
@@ -47,7 +61,7 @@ sftpB = paramiko.SFTPClient.from_transport(transportB)
 app = QApplication()
 loader = QUiLoader()
 
-file = QFile("DirZero.ui")
+file = QFile("Dir2Zero.ui")
 file.open(QFile.ReadOnly)
 
 window = loader.load(file)
