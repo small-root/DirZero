@@ -2198,7 +2198,6 @@ class MachinePanelWidget(QFrame):
         self._paste_into_dir(target_dir)
 
     def _paste_into_dir(self, dest_dir: str):
-        """Executes cross-machine or local paste transfer with progress tracking."""
         if not self.clipboard.has_item():
             self._notify_status("Clipboard is empty.")
             return
