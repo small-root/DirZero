@@ -1182,12 +1182,11 @@ class MachineAuthBar(QFrame):
         self.setObjectName("authFrame")
         self.setFrameShape(QFrame.StyledPanel)
         self.setStyleSheet(
-            "QFrame#authFrame { background: #131b28; border: 1px solid #334155; border-radius: 8px; padding: 8px; margin: 4px 0px; }"
-            "QLabel { color: #cbd5e1; font-size: 11px; font-weight: 600; }"
-            "QLineEdit { background: #0b0f16; color: #f8fafc; border: 1px solid #28354b; border-radius: 4px; padding: 4px 8px; font-size: 11px; }"
-            "QLineEdit:focus { border-color: #3b82f6; }"
-            "QCheckBox { color: #94a3b8; font-size: 11px; }"
-            "QCheckBox::indicator { width: 14px; height: 14px; }"
+            "QFrame#authFrame { background: #ffffff; border: 1px solid #c4c4c4; border-radius: 8px; padding: 8px; margin: 4px 0px; }"
+"QLabel { color: #333333; font-size: 11px; font-weight: 600; }"
+"QLineEdit { background: #f8f8f8; color: #111111; border: 1px solid #c4c4c4; border-radius: 4px; padding: 4px 8px; font-size: 11px; }"
+"QLineEdit:focus { border-color: #999999; }"
+"QCheckBox { color: #555555; font-size: 11px; }"
         )
 
         layout = QVBoxLayout(self)
@@ -1195,7 +1194,7 @@ class MachineAuthBar(QFrame):
         layout.setSpacing(6)
         title_box = QHBoxLayout()
         self.title_label = QLabel("🔑 SSH Authentication")
-        self.title_label.setStyleSheet("color: #60a5fa; font-weight: 700; font-size: 11px;")
+        self.title_label.setStyleSheet("color:#333333; font-weight: 700; font-size: 11px;")
         title_box.addWidget(self.title_label)
         title_box.addStretch()
 
@@ -1233,8 +1232,8 @@ class MachineAuthBar(QFrame):
         self.btn_toggle_pass = QPushButton("👁", self)
         self.btn_toggle_pass.setFixedSize(26, 26)
         self.btn_toggle_pass.setStyleSheet(
-            "QPushButton { background: #1e293b; color: #94a3b8; border: 1px solid #28354b; border-left: none; border-top-right-radius: 4px; border-bottom-right-radius: 4px; font-size: 11px; }"
-            "QPushButton:hover { background: #334155; color: #ffffff; }"
+           "QPushButton { background: #eeeeee; color: #333333; border: 1px solid #c4c4c4; border-left: none; border-top-right-radius: 4px; border-bottom-right-radius: 4px; font-size: 11px; }"
+"QPushButton:hover { background: #dddddd; color: #111111; }"
         )
         self.btn_toggle_pass.clicked.connect(self._toggle_password_visibility)
         pass_box.addWidget(self.btn_toggle_pass)
@@ -1251,8 +1250,8 @@ class MachineAuthBar(QFrame):
         self.btn_browse_key = QPushButton("📂 Browse...", self)
         self.btn_browse_key.setFixedHeight(26)
         self.btn_browse_key.setStyleSheet(
-            "QPushButton { background: #1e293b; color: #cbd5e1; border: 1px solid #334155; border-radius: 4px; padding: 2px 8px; font-size: 10px; font-weight: 600; }"
-            "QPushButton:hover { background: #334155; color: #ffffff; }"
+            "QPushButton { background: #f5f5f5; color: #111111; border: 1px solid #c4c4c4; border-radius: 4px; padding: 2px 8px; font-size: 10px; font-weight: 600; }"
+"QPushButton:hover { background: #e8e8e8; color: #000000; }"
         )
         self.btn_browse_key.clicked.connect(self._browse_key_file)
         row2.addWidget(self.btn_browse_key)
@@ -1270,8 +1269,8 @@ class MachineAuthBar(QFrame):
         self.btn_connect = QPushButton("🔑 Connect", self)
         self.btn_connect.setFixedHeight(26)
         self.btn_connect.setStyleSheet(
-            "QPushButton { background: #2563eb; color: #ffffff; border: none; border-radius: 4px; padding: 2px 12px; font-size: 11px; font-weight: 700; }"
-            "QPushButton:hover { background: #1d4ed8; }"
+            "QPushButton { background: #f5f5f5; color: #111111; border: 1px solid #c4c4c4; border-radius: 4px; padding: 2px 12px; font-size: 11px; font-weight: 700; }"
+"QPushButton:hover { background: #e8e8e8; color: #000000; }"
         )
         self.btn_connect.clicked.connect(self._on_submit)
         row3.addWidget(self.btn_connect)
@@ -1691,9 +1690,9 @@ class MachinePanelWidget(QFrame):
         self.btn_new_file = QPushButton("+ File")
         self.btn_new_file.setFixedHeight(26)
         self.btn_new_file.setStyleSheet(
-            "QPushButton { background: #1f293d; color: #e2e8f0; border: 1px solid #334155; border-radius: 4px; padding: 2px 8px; font-size: 11px; font-weight: 600; }"
-            "QPushButton:hover { background: #334155; border-color: #60a5fa; color: #ffffff; }"
-            "QPushButton:disabled { background: #131822; color: #475569; border-color: #1e293b; }"
+          "QPushButton { background: #f5f5f5; color: #111111; border: 1px solid #c4c4c4; border-radius: 4px; padding: 2px 8px; font-size: 11px; font-weight: 600; }"
+    "QPushButton:hover { background: #e8e8e8; border-color: #999999; color: #000000; }"
+    "QPushButton:disabled { background: #eeeeee; color: #888888; border-color: #dddddd; }"
         )
         self.btn_new_file.setToolTip("Create a new file on this machine")
         self.btn_new_file.clicked.connect(lambda: self._create_new_file(None))
@@ -1703,9 +1702,9 @@ class MachinePanelWidget(QFrame):
         self.btn_new_folder = QPushButton("+ Folder")
         self.btn_new_folder.setFixedHeight(26)
         self.btn_new_folder.setStyleSheet(
-            "QPushButton { background: #1f293d; color: #e2e8f0; border: 1px solid #334155; border-radius: 4px; padding: 2px 8px; font-size: 11px; font-weight: 600; }"
-            "QPushButton:hover { background: #334155; border-color: #60a5fa; color: #ffffff; }"
-            "QPushButton:disabled { background: #131822; color: #475569; border-color: #1e293b; }"
+           "QPushButton { background: #f5f5f5; color: #111111; border: 1px solid #c4c4c4; border-radius: 4px; padding: 2px 8px; font-size: 11px; font-weight: 600; }"
+    "QPushButton:hover { background: #e8e8e8; border-color: #999999; color: #000000; }"
+    "QPushButton:disabled { background: #eeeeee; color: #888888; border-color: #dddddd; }"
         )
         self.btn_new_folder.setToolTip("Create a new folder on this machine")
         self.btn_new_folder.clicked.connect(lambda: self._create_new_folder(None))
@@ -1715,9 +1714,9 @@ class MachinePanelWidget(QFrame):
         self.btn_paste = QPushButton("📥 Paste")
         self.btn_paste.setFixedHeight(26)
         self.btn_paste.setStyleSheet(
-            "QPushButton { background: #065f46; color: #34d399; border: 1px solid #059669; border-radius: 4px; padding: 2px 8px; font-size: 11px; font-weight: 600; }"
-            "QPushButton:hover { background: #047857; color: #ffffff; }"
-            "QPushButton:disabled { background: #131822; color: #475569; border-color: #1e293b; }"
+           "QPushButton { background: #f5f5f5; color: #111111; border: 1px solid #c4c4c4; border-radius: 4px; padding: 2px 8px; font-size: 11px; font-weight: 600; }"
+    "QPushButton:hover { background: #e8e8e8; border-color: #999999; color: #000000; }"
+    "QPushButton:disabled { background: #eeeeee; color: #888888; border-color: #dddddd; }"
         )
         self.btn_paste.setEnabled(False)
         self.btn_paste.setToolTip("Paste copied/cut item into this directory")
@@ -1728,8 +1727,9 @@ class MachinePanelWidget(QFrame):
         self.btn_auth_toggle = QPushButton("🔑 Auth")
         self.btn_auth_toggle.setFixedHeight(26)
         self.btn_auth_toggle.setStyleSheet(
-            "QPushButton { background: #1e293b; color: #93c5fd; border: 1px solid #334155; border-radius: 4px; padding: 2px 8px; font-size: 11px; font-weight: 600; }"
-            "QPushButton:hover { background: #334155; border-color: #3b82f6; }"
+            "QPushButton { background: #f5f5f5; color: #111111; border: 1px solid #c4c4c4; border-radius: 4px; padding: 2px 8px; font-size: 11px; font-weight: 600; }"
+
+"QPushButton:hover { background: #e8e8e8; border-color: #999999; color: #000000; }"
         )
         self.btn_auth_toggle.setToolTip("Open in-app authentication form to enter password or SSH key")
         self.btn_auth_toggle.clicked.connect(self._toggle_auth_bar)
@@ -1739,8 +1739,9 @@ class MachinePanelWidget(QFrame):
         self.btn_refresh = QPushButton("↻ Refresh")
         self.btn_refresh.setFixedHeight(26)
         self.btn_refresh.setStyleSheet(
-            "QPushButton { background: #252d3d; color: #e2e8f0; border: 1px solid #3b4861; border-radius: 4px; padding: 2px 10px; font-size: 11px; font-weight: 600; }"
-            "QPushButton:hover { background: #323d52; border-color: #60a5fa; }"
+           "QPushButton { background: #f5f5f5; color: #111111; border: 1px solid #c4c4c4; border-radius: 4px; padding: 2px 10px; font-size: 11px; font-weight: 600; }"
+
+"QPushButton:hover { background: #e8e8e8; border-color: #999999; color: #000000; }"
         )
         self.btn_refresh.clicked.connect(self.reload_filesystem)
         self.toolbar_layout.addWidget(self.btn_refresh)
@@ -1749,8 +1750,9 @@ class MachinePanelWidget(QFrame):
         self.btn_retry = QPushButton("⟳ Connect")
         self.btn_retry.setFixedHeight(26)
         self.btn_retry.setStyleSheet(
-            "QPushButton { background: #1e3a8a; color: #ffffff; border: 1px solid #3b82f6; border-radius: 4px; padding: 2px 10px; font-size: 11px; font-weight: 600; }"
-            "QPushButton:hover { background: #2563eb; }"
+            "QPushButton { background: #f5f5f5; color: #111111; border: 1px solid #c4c4c4; border-radius: 4px; padding: 2px 10px; font-size: 11px; font-weight: 600; }"
+
+"QPushButton:hover { background: #e8e8e8; border-color: #999999; color: #000000; }"
         )
         self.btn_retry.clicked.connect(self._on_action_button_clicked)
         self.btn_retry.setVisible(False)
