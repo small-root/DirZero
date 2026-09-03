@@ -1606,8 +1606,8 @@ class MachinePanelWidget(QFrame):
     def _setup_ui(self):
         """Loads MachinePanel.ui or constructs fallback layout with full toolbar and auth bar."""
         self.setObjectName("machinePanel")
-        self.setFrameShape(QFrame.StyledPanel)
-        self.setFrameShadow(QFrame.Raised)
+        self.setFrameShape(QFrame.NoFrame)
+        self.setFrameShadow(QFrame.Plain)
         self.setMinimumSize(360, 440)
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
