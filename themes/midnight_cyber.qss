@@ -28,6 +28,32 @@ QFrame#machinePanel {
 
 }
 
+QPushButton#disconnect {
+    background: #3b181a;
+    color: #fca5a5;
+    border: 1px solid #7f1d1d;
+    border-radius: 6px;
+    padding: 5px 12px;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+QPushButton#disconnect:hover {
+    background: #991b1b;
+    color: #ffffff;
+    border-color: #ef4444;
+}
+
+QPushButton#disconnect:pressed {
+    background: #7f1d1d;
+}
+
+QPushButton#disconnect:disabled {
+    background: #191213;
+    color: #582424;
+    border-color: #361717;
+}
+
 QFrame#machinePanel:hover {
    background: #20252d;
 }

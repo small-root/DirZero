@@ -57,6 +57,15 @@
    </item>
 
    <item>
+       <widget class="QPushButton" name="disconnect">
+	   <property name="text">
+	    <string>Disconnect</string>
+	    </property>
+	</widget>
+    </item>
+
+
+   <item>
     <widget class="QLabel" name="ipHeading">
      <property name="text">
       <string>IP ADDRESS</string>

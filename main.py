@@ -1622,11 +1622,16 @@ class MachinePanelWidget(QFrame):
             except Exception:
                 loaded_ui = None
 
+        self.btn_disconnect = None
         if loaded_ui:
             self.heading_label = loaded_ui.findChild(QLabel, "machineHeading")
             self.status_label = loaded_ui.findChild(QLabel, "statusLabel")
             self.ip_heading = loaded_ui.findChild(QLabel, "ipHeading")
             self.ip_label = loaded_ui.findChild(QLabel, "ipAddress")
+            self.btn_disconnect = loaded_ui.findChild(QPushButton, "disconnect")
+            if self.btn_disconnect:
+                self.btn_disconnect.setToolTip("Disconnect SSH/SFTP session and forget saved credentials")
+                self.btn_disconnect.clicked.connect(self.disconnect_machine)
             old_tree = loaded_ui.findChild(QTreeView, "treeView")
 
             # Create enhanced RemoteFileTreeView
@@ -1756,6 +1761,15 @@ class MachinePanelWidget(QFrame):
         self.btn_retry.setVisible(False)
         self.toolbar_layout.addWidget(self.btn_retry)
 
+        # Toolbar: Fallback Disconnect Button (if not already loaded from MachinePanel.ui)
+        if not self.btn_disconnect:
+            self.btn_disconnect = QPushButton("Disconnect")
+            self.btn_disconnect.setObjectName("disconnect")
+            self.btn_disconnect.setFixedHeight(26)
+            self.btn_disconnect.setToolTip("Disconnect SSH/SFTP session and forget saved credentials")
+            self.btn_disconnect.clicked.connect(self.disconnect_machine)
+            self.toolbar_layout.addWidget(self.btn_disconnect)
+
         # Insert toolbar and auth_bar into layout above tree view
         card_layout = self.findChild(QVBoxLayout, "cardLayout")
         target_layout = card_layout if card_layout else self.main_layout
@@ -1841,6 +1855,8 @@ class MachinePanelWidget(QFrame):
         self.btn_new_file.setEnabled(is_connected)
         self.btn_new_folder.setEnabled(is_connected)
         self.btn_paste.setEnabled(is_connected and self.clipboard.has_item())
+        if hasattr(self, "btn_disconnect") and self.btn_disconnect:
+            self.btn_disconnect.setEnabled(is_connected or state == MachineState.CONNECTING)
 
         if state == MachineState.ONLINE_SSH_OK:
             if self.status_label:
@@ -1936,6 +1952,51 @@ class MachinePanelWidget(QFrame):
         self.sftp_manager.key_filepath = self.key_path
 
         self.start_connection()
+
+    def disconnect_machine(self):
+        """
+        Disconnects active SSH/SFTP session for this machine,
+        forgets saved credentials from disk and memory, resets the file tree,
+        and prompts the user for authentication again.
+        """
+        # 1. Disconnect SSH/SFTP session
+        self.sftp_manager.disconnect()
+
+        # 2. Forget saved credentials from CredentialStore
+        CredentialStore.remove(self.machine_info.ip)
+        if self.machine_info.name:
+            CredentialStore.remove(self.machine_info.name)
+
+        # 3. Clear memory credentials
+        self.password = None
+        self.sftp_manager.password = None
+
+        # 4. Reset authentication form password input
+        if hasattr(self, "auth_bar"):
+            self.auth_bar.input_pass.clear()
+
+        # 5. Reset remote file system model and root node
+        self.root_node.children.clear()
+        self.root_node.is_loaded = False
+        self.root_node.is_loading = False
+        self.fs_model.set_node_error(
+            self.root_node, "Disconnected. Enter password to authenticate."
+        )
+
+        # 6. Reset path label
+        if hasattr(self, "path_label"):
+            self.path_label.setText("📁 Path: (Disconnected)")
+
+        # 7. Transition card state to AUTH_REQUIRED and show auth bar
+        self.set_state(
+            MachineState.AUTH_REQUIRED,
+            detail="Disconnected. Please enter password to re-authenticate."
+        )
+        if hasattr(self, "auth_bar"):
+            self.auth_bar.setVisible(True)
+
+        # 8. Notify status bar
+        self._notify_status(f"[{self.machine_info.name}] Disconnected & credentials forgotten.")
 
     def _on_clipboard_changed(self):
         """Updates Paste button state when clipboard changes."""
@@ -2807,6 +2868,32 @@ QFrame#machinePanel {
     border: 1px solid #28354b;
     border-radius: 12px;
     padding: 14px;
+}
+
+QPushButton#disconnect {
+    background: #3b181a;
+    color: #fca5a5;
+    border: 1px solid #7f1d1d;
+    border-radius: 6px;
+    padding: 5px 12px;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+QPushButton#disconnect:hover {
+    background: #991b1b;
+    color: #ffffff;
+    border-color: #ef4444;
+}
+
+QPushButton#disconnect:pressed {
+    background: #7f1d1d;
+}
+
+QPushButton#disconnect:disabled {
+    background: #191213;
+    color: #582424;
+    border-color: #361717;
 }
 
 QFrame#machinePanel:hover {

@@ -1,0 +1,405 @@
+/* DirZero - Cybersecurity Dark Theme */
+
+QMainWindow {
+    background: #000000;
+}
+
+QWidget {
+    font-family: "SF Pro Display", "Segoe UI", "Helvetica Neue", "Ubuntu", sans-serif;
+    background: #000000;
+    color: #ffffff;
+}
+
+/* Header Bar */
+QWidget#headerWidget {
+    background: #000000;
+    border: 1px solid #000000;
+    border-radius: 10px;
+    padding: 8px 16px;
+}
+
+/* Machine Card - Base */
+QFrame#machinePanel {
+    background: #000000;
+    border: 1px solid #28354b;
+    border-radius: 12px;
+    padding: 14px;
+}
+
+QFrame#machinePanel:hover {
+    border-color: #000000;
+}
+
+/* Machine Card - Connected State */
+QFrame#machinePanel[machineState="CONNECTED"] {
+    background: #000000;
+    border: 1px solid #d5dbeb;
+}
+
+/* Machine Card - Online SSH Unavailable State */
+QFrame#machinePanel[machineState="ONLINE_SSH_UNAVAILABLE"] {
+    background: #000000;
+    border: 1px dashed #ada8a5;
+}
+/* Machine Card - Error State */
+QFrame#machinePanel[machineState="ERROR"] {
+    background: #000000;
+    border: 1px solid #e8dfdf;
+}
+
+/* Machine Card - Authentication Required State */
+QFrame#machinePanel[machineState="AUTH_REQUIRED"] {
+    background: #000000;
+    border: 1px solid #e5e3e1;
+}
+
+/* In-App Authentication Frame */
+QFrame#authFrame {
+    background: #000000;
+    border: 1px solid #e0e3e8;
+    border-radius: 8px;
+    padding: 8px;
+    margin: 4px 0px;
+}
+
+
+QPushButton#disconnect {
+    background: #3b181a;
+    color: #fca5a5;
+    border: 1px solid #7f1d1d;
+    border-radius: 6px;
+    padding: 5px 12px;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+QPushButton#disconnect:hover {
+    background: #991b1b;
+    color: #ffffff;
+    border-color: #ef4444;
+}
+
+QPushButton#disconnect:pressed {
+    background: #7f1d1d;
+}
+
+QPushButton#disconnect:disabled {
+    background: #191213;
+    color: #582424;
+    border-color: #361717;
+}
+
+
+/* In-App Transfer Progress Dock */
+QFrame#progressDock {
+    background: #000000;
+    border: 1px solid #1e293b;
+    border-radius: 8px;
+    padding: 8px 12px;
+    margin-top: 4px;
+}
+
+QLabel#progressLabel {
+    color: #4A494B;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+QProgressBar {
+    background: #000000;
+    border: 1px solid #28354b;
+    border-radius: 5px;
+    text-align: center;
+    color: #f8fafc;
+    font-size: 11px;
+    font-weight: 700;
+    height: 16px;
+}
+
+QProgressBar::chunk {
+    background: #6b7280;
+    border-radius: 4px;
+}
+
+/* Machine heading */
+QLabel#machineHeading {
+    color: #ffffff;
+    font-size: 17px;
+    font-weight: 700;
+    padding: 2px 0px;
+}
+
+/* Status Label */
+QLabel#statusLabel {
+    font-size: 12px;
+    font-weight: 700;
+    padding: 2px 0px;
+}
+
+/* IP heading */
+QLabel#ipHeading {
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    padding-top: 4px;
+    padding-bottom: 2px;
+}
+
+/* IP address */
+QLabel#ipAddress {
+    background: #1f2937;
+    color: #ffffff;
+    border: 1px solid #4A494B;
+    border-radius: 8px;
+    font-family: "JetBrains Mono", "SF Mono", "Fira Code", monospace;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 6px 10px;
+}
+
+/* Filesystem TreeView with Draggable Column Divider Lines */
+QTreeView {
+    background: #000000;
+    color: #ffffff;
+    border: 1px solid #232d3f;
+    border-radius: 8px;
+    padding: 4px;
+    outline: none;
+    font-size: 12px;
+}
+
+QTreeView:disabled {
+    background: #000000;
+    color: #ffffff;
+    border-color: #1a2230;
+}
+
+QTreeView::item {
+    padding: 5px 6px;
+    border-radius: 4px;
+}
+
+QTreeView::item:hover {
+    background: #1b2434;
+    color: #ffffff;
+}
+
+QTreeView::item:selected {
+    background: #1e3a8a;
+    color: #4A494B;
+}
+
+QHeaderView::section {
+    background: #000000;
+    color: #ffffff;
+    padding: 5px 8px;
+    border: none;
+    border-right: 1px solid #28354b;
+    border-bottom: 1px solid #232d3f;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+QHeaderView::section:hover {
+    background: #1c2433;
+    color: #f8fafc;
+}
+
+/* Context Menu */
+QMenu {
+    background: #000000;
+    border: 1px solid #334155;
+    border-radius: 6px;
+    padding: 4px;
+}
+
+QMenu::item {
+    padding: 6px 20px;
+    border-radius: 4px;
+    color: #ffffff;
+    font-size: 12px;
+}
+
+QMenu::item:selected {
+    background: #1e3a8a;
+    color: #4A494B;
+}
+
+QMenu::separator {
+    height: 1px;
+    background: #28354b;
+    margin: 4px 8px;
+}
+
+/* Scroll Area & Scrollbars */
+QScrollArea {
+    background: transparent;
+    border: none;
+}
+
+QScrollBar:vertical {
+    background: #000000;
+    width: 10px;
+    margin: 0;
+    border-radius: 5px;
+}
+
+QScrollBar::handle:vertical {
+    background: #232d3f;
+    min-height: 20px;
+    border-radius: 5px;
+}
+
+QScrollBar::handle:vertical:hover {
+    background: #3b4d6d;
+}
+
+QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+    height: 0px;
+}
+
+/* Main status bar */
+QStatusBar {
+    background: #000000;
+    color: #ffffff;
+    border-top: 1px solid #1a2230;
+    font-size: 12px;
+}
+
+/* Final black-and-white theme overrides */
+QLabel,
+QPushButton,
+QToolButton,
+QLineEdit,
+QCheckBox,
+QTreeView,
+QHeaderView::section,
+QMenu,
+QMenu::item,
+QStatusBar,
+QProgressBar {
+    color: #ffffff;
+}
+
+QLineEdit,
+QPushButton,
+QToolButton,
+QTreeView,
+QMenu,
+QProgressBar,
+QFrame#machinePanel,
+QFrame#authFrame,
+QFrame#progressDock {
+    border-color: #666666;
+}
+
+QWidget#headerWidget,
+QFrame#machinePanel,
+QFrame#authFrame,
+QFrame#progressDock,
+QTreeView,
+QMenu,
+QProgressBar,
+QStatusBar {
+    background: #111827;
+}
+
+QLabel#machineHeading,
+QLabel#ipHeading,
+QLabel#ipAddress,
+QLabel#progressLabel,
+QTreeView::item,
+QTreeView::item:selected,
+QMenu::item,
+QMenu::item:selected {
+    color: #ffffff;
+}
+
+QLineEdit {
+    background: #0b1220;
+    color: #ffffff;
+    border: 1px solid #334155;
+    border-radius: 5px;
+    selection-background-color: #4b5563;
+    selection-color: #ffffff;
+}
+
+QLineEdit:focus {
+    border: 1px solid #4A494B;
+}
+
+QPushButton,
+QToolButton {
+    background: #1f2937;
+    color: #ffffff;
+    border: 1px solid #475569;
+    border-radius: 5px;
+}
+
+QPushButton:hover,
+QToolButton:hover {
+    background: #293548;
+    border-color: #4A494B;
+}
+
+QPushButton:pressed,
+QToolButton:pressed {
+    background: #172033;
+    border-color: #4A494B;
+}
+
+QPushButton:disabled,
+QToolButton:disabled,
+QLineEdit:disabled {
+    background: #0b0f16;
+    color: #94a3b8;
+    border-color: #263244;
+}
+
+QTreeView::item:selected,
+QMenu::item:selected {
+    background: #374151;
+    color: #ffffff;
+}
+
+QCheckBox::indicator {
+    border: 1px solid #64748b;
+    border-radius: 3px;
+    background: #0b1220;
+}
+
+QCheckBox::indicator:checked {
+    background: #4A494B;
+    border-color: #6b7280;
+}
+
+/* Headings stay open; framed controls keep the rounded gray treatment. */
+QWidget#headerWidget,
+QLabel#machineHeading,
+QLabel#statusLabel,
+QLabel#ipHeading {
+    background: transparent;
+    border: none;
+}
+
+QFrame#machinePanel,
+QFrame#machinePanel[machineState="CONNECTED"],
+QFrame#machinePanel[machineState="ONLINE_SSH_UNAVAILABLE"],
+QFrame#machinePanel[machineState="ERROR"],
+QFrame#machinePanel[machineState="AUTH_REQUIRED"],
+QFrame#authFrame,
+QFrame#progressDock {
+    border: 1px solid #6b7280;
+    border-radius: 10px;
+}
+
+QLineEdit,
+QPushButton,
+QToolButton,
+QTreeView,
+QMenu,
+QProgressBar {
+    border: 1px solid #6b7280;
+    border-radius: 6px;
+}
