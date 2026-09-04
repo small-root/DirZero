@@ -1,0 +1,81 @@
+/* Main application */
+QMainWindow {
+    background: #1e1e1e;
+}
+
+QWidget {
+    font-family: "SF Pro Display", "Helvetica Neue", sans-serif;
+}
+
+/* Machine card */
+QFrame#machinePanel {
+    background: #ffffff;
+    border: 1px solid #d9dee7;
+    border-radius: 12px;
+    padding: 14px;
+}
+
+/* Machine heading */
+QLabel#machineHeading {
+    color: #1f2937;
+    font-size: 20px;
+    font-weight: 700;
+    padding: 4px 0px;
+}
+
+/* Online status */
+QLabel#statusLabel {
+    color: #07883f;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 2px 0px;
+}
+
+/* IP heading */
+QLabel#ipHeading {
+    color: #687386;
+    font-size: 12px;
+    font-weight: 700;
+    padding-top: 6px;
+    padding-bottom: 2px;
+}
+
+/* IP address */
+QLabel#ipAddress {
+    background: #f5f7fa;
+    color: #1f2937;
+    border: 1px solid #d5dbe5;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 8px 10px;
+}
+
+/* File/tree area */
+QTreeView {
+    background: #fafbfc;
+    color: #374151;
+    border: 1px solid #dfe4eb;
+    border-radius: 7px;
+    padding: 8px;
+    outline: none;
+}
+
+/* Tree rows */
+QTreeView::item {
+    padding: 6px;
+    border-radius: 4px;
+}
+
+/* Selected tree item */
+QTreeView::item:selected {
+    background: #e8eef7;
+    color: #1f2937;
+}
+
+/* Main status bar */
+QStatusBar {
+    background: #1e1e1e;
+    color: #9ca3af;
+    border-top: 1px solid #3a3a3a;
+}

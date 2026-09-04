@@ -1,62 +1,62 @@
-/* DirZero - Cybersecurity Dark Theme */
+/* DirZero - Light Grayscale Theme */
 
 QMainWindow {
-    background: #0f141c;
+    background: #f5f5f5;
 }
 
 QWidget {
     font-family: "SF Pro Display", "Segoe UI", "Helvetica Neue", "Ubuntu", sans-serif;
-    color: #e2e8f0;
+    color: #333333;
 }
 
 /* Header Bar */
 QWidget#headerWidget {
-    background: #151b26;
-    border: 1px solid #232d3f;
+    background: #ffffff;
+    border: 1px solid #d1d1d1;
     border-radius: 10px;
     padding: 8px 16px;
 }
 
 /* Machine Card - Base */
 QFrame#machinePanel {
-    background: #171e2c;
-    border: 1px solid #28354b;
+    background: #ffffff;
+    border: 1px solid #c4c4c4;
     border-radius: 12px;
     padding: 14px;
 }
 
 QFrame#machinePanel:hover {
-    border-color: #3b4d6d;
+    border-color: #999999;
 }
 
 /* Machine Card - Connected State */
 QFrame#machinePanel[machineState="CONNECTED"] {
-    background: #16202f;
+    background: #f4faf6;
     border: 1px solid #10b981;
 }
 
 /* Machine Card - Online SSH Unavailable State */
 QFrame#machinePanel[machineState="ONLINE_SSH_UNAVAILABLE"] {
-    background: #131822;
-    border: 1px dashed #78350f;
+    background: #faf9f4;
+    border: 1px dashed #b45309;
 }
 
 /* Machine Card - Error State */
 QFrame#machinePanel[machineState="ERROR"] {
-    background: #1c1519;
+    background: #fcf5f5;
     border: 1px solid #dc2626;
 }
 
 /* Machine Card - Authentication Required State */
 QFrame#machinePanel[machineState="AUTH_REQUIRED"] {
-    background: #1a1715;
+    background: #fcf8f4;
     border: 1px solid #d97706;
 }
 
 /* In-App Authentication Frame */
 QFrame#authFrame {
-    background: #131b28;
-    border: 1px solid #334155;
+    background: #f8f8f8;
+    border: 1px solid #b8b8b8;
     border-radius: 8px;
     padding: 8px;
     margin: 4px 0px;
@@ -64,38 +64,38 @@ QFrame#authFrame {
 
 /* In-App Transfer Progress Dock */
 QFrame#progressDock {
-    background: #131b29;
-    border: 1px solid #1e293b;
+    background: #f8f8f8;
+    border: 1px solid #d1d1d1;
     border-radius: 8px;
     padding: 8px 12px;
     margin-top: 4px;
 }
 
 QLabel#progressLabel {
-    color: #93c5fd;
+    color: #444444;
     font-size: 12px;
     font-weight: 600;
 }
 
 QProgressBar {
-    background: #0b0f16;
-    border: 1px solid #28354b;
+    background: #eeeeee;
+    border: 1px solid #c4c4c4;
     border-radius: 5px;
     text-align: center;
-    color: #f8fafc;
+    color: #222222;
     font-size: 11px;
     font-weight: 700;
     height: 16px;
 }
 
 QProgressBar::chunk {
-    background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #2563eb, stop:1 #38bdf8);
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #666666, stop:1 #333333);
     border-radius: 4px;
 }
 
 /* Machine heading */
 QLabel#machineHeading {
-    color: #f8fafc;
+    color: #111111;
     font-size: 17px;
     font-weight: 700;
     padding: 2px 0px;
@@ -110,7 +110,7 @@ QLabel#statusLabel {
 
 /* IP heading */
 QLabel#ipHeading {
-    color: #64748b;
+    color: #777777;
     font-size: 11px;
     font-weight: 700;
     letter-spacing: 0.5px;
@@ -120,9 +120,9 @@ QLabel#ipHeading {
 
 /* IP address */
 QLabel#ipAddress {
-    background: #0c1017;
-    color: #93c5fd;
-    border: 1px solid #232d3f;
+    background: #fafafa;
+    color: #444444;
+    border: 1px solid #d1d1d1;
     border-radius: 6px;
     font-family: "JetBrains Mono", "SF Mono", "Fira Code", monospace;
     font-size: 13px;
@@ -132,9 +132,9 @@ QLabel#ipAddress {
 
 /* Filesystem TreeView with Draggable Column Divider Lines */
 QTreeView {
-    background: #0b0f16;
-    color: #cbd5e1;
-    border: 1px solid #232d3f;
+    background: #ffffff;
+    color: #444444;
+    border: 1px solid #d1d1d1;
     border-radius: 8px;
     padding: 4px;
     outline: none;
@@ -142,9 +142,9 @@ QTreeView {
 }
 
 QTreeView:disabled {
-    background: #090c12;
-    color: #475569;
-    border-color: #1a2230;
+    background: #eeeeee;
+    color: #999999;
+    border-color: #dddddd;
 }
 
 QTreeView::item {
@@ -153,35 +153,35 @@ QTreeView::item {
 }
 
 QTreeView::item:hover {
-    background: #1b2434;
-    color: #ffffff;
+    background: #f0f0f0;
+    color: #111111;
 }
 
 QTreeView::item:selected {
-    background: #1e3a8a;
-    color: #93c5fd;
+    background: #dddddd;
+    color: #111111;
 }
 
 QHeaderView::section {
-    background: #151b26;
-    color: #94a3b8;
+    background: #f3f3f3;
+    color: #555555;
     padding: 5px 8px;
     border: none;
-    border-right: 1px solid #28354b;
-    border-bottom: 1px solid #232d3f;
+    border-right: 1px solid #c4c4c4;
+    border-bottom: 1px solid #d1d1d1;
     font-size: 11px;
     font-weight: 700;
 }
 
 QHeaderView::section:hover {
-    background: #1c2433;
-    color: #f8fafc;
+    background: #e8e8e8;
+    color: #111111;
 }
 
 /* Context Menu */
 QMenu {
-    background: #171e2c;
-    border: 1px solid #334155;
+    background: #ffffff;
+    border: 1px solid #b8b8b8;
     border-radius: 6px;
     padding: 4px;
 }
@@ -189,18 +189,18 @@ QMenu {
 QMenu::item {
     padding: 6px 20px;
     border-radius: 4px;
-    color: #e2e8f0;
+    color: #333333;
     font-size: 12px;
 }
 
 QMenu::item:selected {
-    background: #1e3a8a;
-    color: #93c5fd;
+    background: #dddddd;
+    color: #111111;
 }
 
 QMenu::separator {
     height: 1px;
-    background: #28354b;
+    background: #c4c4c4;
     margin: 4px 8px;
 }
 
@@ -210,21 +210,29 @@ QScrollArea {
     border: none;
 }
 
+QAbstractScrollArea {
+    background: #eeeeee;
+}
+
+QAbstractScrollArea > QWidget {
+    background: #eeeeee;
+}
+
 QScrollBar:vertical {
-    background: #0b0f16;
+    background: #f0f0f0;
     width: 10px;
     margin: 0;
     border-radius: 5px;
 }
 
 QScrollBar::handle:vertical {
-    background: #232d3f;
+    background: #c4c4c4;
     min-height: 20px;
     border-radius: 5px;
 }
 
 QScrollBar::handle:vertical:hover {
-    background: #3b4d6d;
+    background: #999999;
 }
 
 QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
@@ -233,9 +241,8 @@ QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
 
 /* Main status bar */
 QStatusBar {
-    background: #0b0f16;
-    color: #94a3b8;
-    border-top: 1px solid #1a2230;
+    background: #fafafa;
+    color: #666666;
+    border-top: 1px solid #dddddd;
     font-size: 12px;
 }
-

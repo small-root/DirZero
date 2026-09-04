@@ -2512,6 +2512,36 @@ class Dir2ZeroWindow(QMainWindow):
         self.badge_unavailable.setStyleSheet("background: #78350f; color: #fbbf24; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 700;")
         header_layout.addWidget(self.badge_unavailable)
 
+        # Theme Switcher Button & Dropdown Menu
+        self.btn_theme = QPushButton()
+        self.btn_theme.setFixedHeight(34)
+        self.btn_theme.setToolTip("Click to choose or cycle themes extracted from git branches")
+        self.btn_theme.setStyleSheet(
+            "QPushButton { background: #1e293b; color: #38bdf8; border: 1px solid #334155; border-radius: 6px; padding: 0 12px; font-size: 12px; font-weight: 700; }"
+            "QPushButton:hover { background: #334155; color: #ffffff; border-color: #60a5fa; }"
+        )
+
+        theme_menu = QMenu(self)
+        theme_menu.setObjectName("themeMenu")
+
+        theme_mgr = ThemeManager.instance()
+        for theme in theme_mgr.themes:
+            action = QAction(theme["name"], self)
+            tid = theme["id"]
+            action.triggered.connect(lambda checked=False, t_id=tid: self._select_theme(t_id))
+            theme_menu.addAction(action)
+
+        theme_menu.addSeparator()
+        action_cycle = QAction("🔄 Cycle Next Theme", self)
+        action_cycle.triggered.connect(self._cycle_theme)
+        theme_menu.addAction(action_cycle)
+
+        self.btn_theme.setMenu(theme_menu)
+        header_layout.addWidget(self.btn_theme)
+
+        theme_mgr.theme_changed.connect(self._on_theme_changed)
+        self._update_theme_button_label()
+
         # Global Refresh Button
         self.btn_scan = QPushButton("↻ Refresh Tailnet")
         self.btn_scan.setFixedHeight(34)
@@ -2732,6 +2762,21 @@ class Dir2ZeroWindow(QMainWindow):
         self.thread_pool.waitForDone(1000)
         super().closeEvent(event)
 
+    def _select_theme(self, theme_id: str):
+        ThemeManager.instance().switch_to_theme(theme_id)
+
+    def _cycle_theme(self):
+        ThemeManager.instance().cycle_next_theme()
+
+    def _on_theme_changed(self, theme_id: str, theme_name: str):
+        self._update_theme_button_label()
+        if hasattr(self, "statusBar") and self.statusBar():
+            self.statusBar().showMessage(f"🎨 Theme switched to: {theme_name}", 4000)
+
+    def _update_theme_button_label(self):
+        curr = ThemeManager.instance().get_current_theme()
+        self.btn_theme.setText(f"🎨 {curr['name']} ▾")
+
 
 # ==============================================================================
 # 13. STYLESHEET LOADER
@@ -2906,16 +2951,150 @@ QStatusBar {
 }
 """
 
-def load_stylesheet(app: QApplication):
-    """Loads style.qss if available, otherwise applies modern fallback theme."""
-    if os.path.exists(QSS_STYLE_PATH):
+THEMES_DIR = "themes"
+THEME_CONFIG_FILE = ".active_theme"
+
+DEFAULT_THEMES = [
+    {
+        "id": "cybersecurity_dark",
+        "name": "🛡️ Cyber Dark",
+        "file": os.path.join(THEMES_DIR, "cybersecurity_dark.qss"),
+    },
+    {
+        "id": "light_grayscale",
+        "name": "☀️ Light Grayscale",
+        "file": os.path.join(THEMES_DIR, "light_grayscale.qss"),
+    },
+    {
+        "id": "midnight_cyber",
+        "name": "🌙 Midnight Cyber",
+        "file": os.path.join(THEMES_DIR, "midnight_cyber.qss"),
+    },
+    {
+        "id": "classic_dark",
+        "name": "💻 Classic Dark",
+        "file": os.path.join(THEMES_DIR, "classic_dark.qss"),
+    },
+]
+
+
+class ThemeManager(QObject):
+    """
+    Manages dynamic theme loading, theme cycling across git branch themes,
+    persistence, and signal notifications.
+    """
+    theme_changed = Signal(str, str)  # (theme_id, theme_name)
+
+    _instance = None
+
+    @classmethod
+    def instance(cls) -> "ThemeManager":
+        if cls._instance is None:
+            cls._instance = ThemeManager()
+        return cls._instance
+
+    def __init__(self, parent: Optional[QObject] = None):
+        super().__init__(parent)
+        self.themes: List[Dict[str, str]] = []
+        self.current_theme_index: int = 0
+        self.load_available_themes()
+
+    def load_available_themes(self):
+        """Scans the themes directory and registers all .qss themes."""
+        self.themes = list(DEFAULT_THEMES)
+        registered_ids = {t["id"] for t in self.themes}
+
+        if os.path.exists(THEMES_DIR):
+            for fname in sorted(os.listdir(THEMES_DIR)):
+                if fname.endswith(".qss"):
+                    tid = fname.replace(".qss", "")
+                    if tid not in registered_ids:
+                        name = tid.replace("_", " ").title()
+                        self.themes.append({
+                            "id": tid,
+                            "name": f"🎨 {name}",
+                            "file": os.path.join(THEMES_DIR, fname)
+                        })
+                        registered_ids.add(tid)
+
+        saved_id = self.get_saved_theme_id()
+        if saved_id:
+            for idx, theme in enumerate(self.themes):
+                if theme["id"] == saved_id:
+                    self.current_theme_index = idx
+                    break
+
+    def get_saved_theme_id(self) -> Optional[str]:
+        if os.path.exists(THEME_CONFIG_FILE):
+            try:
+                with open(THEME_CONFIG_FILE, "r", encoding="utf-8") as f:
+                    return f.read().strip()
+            except Exception:
+                pass
+        return None
+
+    def save_theme_id(self, theme_id: str):
         try:
-            with open(QSS_STYLE_PATH, "r", encoding="utf-8") as f:
-                app.setStyleSheet(f.read())
-                return
+            with open(THEME_CONFIG_FILE, "w", encoding="utf-8") as f:
+                f.write(theme_id)
         except Exception:
             pass
-    app.setStyleSheet(FALLBACK_STYLESHEET)
+
+    def get_current_theme(self) -> Dict[str, str]:
+        if not self.themes:
+            return {"id": "default", "name": "Default Theme", "file": QSS_STYLE_PATH}
+        return self.themes[self.current_theme_index]
+
+    def apply_current_theme(self, app: Optional[QApplication] = None) -> bool:
+        if app is None:
+            app = QApplication.instance()
+        theme = self.get_current_theme()
+        theme_file = theme["file"]
+
+        stylesheet_content = ""
+        if os.path.exists(theme_file):
+            try:
+                with open(theme_file, "r", encoding="utf-8") as f:
+                    stylesheet_content = f.read()
+            except Exception as e:
+                print(f"[ThemeManager] Failed to read {theme_file}: {e}")
+
+        if not stylesheet_content and os.path.exists(QSS_STYLE_PATH):
+            try:
+                with open(QSS_STYLE_PATH, "r", encoding="utf-8") as f:
+                    stylesheet_content = f.read()
+            except Exception:
+                pass
+
+        if not stylesheet_content:
+            stylesheet_content = FALLBACK_STYLESHEET
+
+        if app:
+            app.setStyleSheet(stylesheet_content)
+            self.save_theme_id(theme["id"])
+            self.theme_changed.emit(theme["id"], theme["name"])
+            return True
+        return False
+
+    def switch_to_theme(self, theme_id: str, app: Optional[QApplication] = None) -> bool:
+        for idx, theme in enumerate(self.themes):
+            if theme["id"] == theme_id:
+                self.current_theme_index = idx
+                return self.apply_current_theme(app)
+        return False
+
+    def cycle_next_theme(self, app: Optional[QApplication] = None) -> Tuple[str, str]:
+        if not self.themes:
+            return ("default", "Default Theme")
+        self.current_theme_index = (self.current_theme_index + 1) % len(self.themes)
+        self.apply_current_theme(app)
+        curr = self.get_current_theme()
+        return (curr["id"], curr["name"])
+
+
+def load_stylesheet(app: QApplication):
+    """Loads current theme via ThemeManager."""
+    ThemeManager.instance().apply_current_theme(app)
 
 
 # ==============================================================================
@@ -2958,5 +3137,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 

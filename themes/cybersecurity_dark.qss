@@ -238,4 +238,3 @@ QStatusBar {
     border-top: 1px solid #1a2230;
     font-size: 12px;
 }
-
