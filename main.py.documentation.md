@@ -1,4 +1,4 @@
-# DirZero `main.py` Documentation
+# DirZero `main.py` Documentation cause my neurons dont remeber shit how we build this...
 
 ## 1. Purpose and Scope
 
