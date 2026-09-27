@@ -1,0 +1,270 @@
+/* DirZero - Light Grayscale Theme */
+
+QMainWindow {
+    background: #f5f5f5;
+}
+
+QWidget {
+    font-family: "SF Pro Display", "Segoe UI", "Helvetica Neue", "Ubuntu", sans-serif;
+    color: #333333;
+}
+
+/* Header Bar */
+QWidget#headerWidget {
+    background: #ffffff;
+    border: 1px solid #d1d1d1;
+    border-radius: 10px;
+    padding: 8px 16px;
+}
+
+/* Machine Card - Base */
+QFrame#machinePanel {
+    background: #ffffff;
+    border: 1px solid #c4c4c4;
+    border-radius: 12px;
+    padding: 14px;
+}
+
+QPushButton#disconnect {
+    background: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fca5a5;
+    border-radius: 6px;
+    padding: 5px 12px;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+QPushButton#disconnect:hover {
+    background: #dc2626;
+    color: #ffffff;
+    border-color: #b91c1c;
+}
+
+QPushButton#disconnect:disabled {
+    background: #f3f4f6;
+    color: #9ca3af;
+    border-color: #e5e7eb;
+}
+
+QFrame#machinePanel:hover {
+    border-color: #999999;
+}
+
+/* Machine Card - Connected State */
+QFrame#machinePanel[machineState="CONNECTED"] {
+    background: #f4faf6;
+    border: 1px solid #10b981;
+}
+
+/* Machine Card - Online SSH Unavailable State */
+QFrame#machinePanel[machineState="ONLINE_SSH_UNAVAILABLE"] {
+    background: #faf9f4;
+    border: 1px dashed #b45309;
+}
+
+/* Machine Card - Error State */
+QFrame#machinePanel[machineState="ERROR"] {
+    background: #fcf5f5;
+    border: 1px solid #dc2626;
+}
+
+/* Machine Card - Authentication Required State */
+QFrame#machinePanel[machineState="AUTH_REQUIRED"] {
+    background: #fcf8f4;
+    border: 1px solid #d97706;
+}
+
+/* In-App Authentication Frame */
+QFrame#authFrame {
+    background: #f8f8f8;
+    border: 1px solid #b8b8b8;
+    border-radius: 8px;
+    padding: 8px;
+    margin: 4px 0px;
+}
+
+/* In-App Transfer Progress Dock */
+QFrame#progressDock {
+    background: #f8f8f8;
+    border: 1px solid #d1d1d1;
+    border-radius: 8px;
+    padding: 8px 12px;
+    margin-top: 4px;
+}
+
+QLabel#progressLabel {
+    color: #444444;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+QProgressBar {
+    background: #eeeeee;
+    border: 1px solid #c4c4c4;
+    border-radius: 5px;
+    text-align: center;
+    color: #222222;
+    font-size: 11px;
+    font-weight: 700;
+    height: 16px;
+}
+
+QProgressBar::chunk {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #666666, stop:1 #333333);
+    border-radius: 4px;
+}
+
+/* Machine heading */
+QLabel#machineHeading {
+    color: #111111;
+    font-size: 17px;
+    font-weight: 700;
+    padding: 2px 0px;
+}
+
+/* Status Label */
+QLabel#statusLabel {
+    font-size: 12px;
+    font-weight: 700;
+    padding: 2px 0px;
+}
+
+/* IP heading */
+QLabel#ipHeading {
+    color: #777777;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    padding-top: 4px;
+    padding-bottom: 2px;
+}
+
+/* IP address */
+QLabel#ipAddress {
+    background: #fafafa;
+    color: #444444;
+    border: 1px solid #d1d1d1;
+    border-radius: 6px;
+    font-family: "JetBrains Mono", "SF Mono", "Fira Code", monospace;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 6px 10px;
+}
+
+/* Filesystem TreeView with Draggable Column Divider Lines */
+QTreeView {
+    background: #ffffff;
+    color: #444444;
+    border: 1px solid #d1d1d1;
+    border-radius: 8px;
+    padding: 4px;
+    outline: none;
+    font-size: 12px;
+}
+
+QTreeView:disabled {
+    background: #eeeeee;
+    color: #999999;
+    border-color: #dddddd;
+}
+
+QTreeView::item {
+    padding: 5px 6px;
+    border-radius: 4px;
+}
+
+QTreeView::item:hover {
+    background: #f0f0f0;
+    color: #111111;
+}
+
+QTreeView::item:selected {
+    background: #dddddd;
+    color: #111111;
+}
+
+QHeaderView::section {
+    background: #f3f3f3;
+    color: #555555;
+    padding: 5px 8px;
+    border: none;
+    border-right: 1px solid #c4c4c4;
+    border-bottom: 1px solid #d1d1d1;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+QHeaderView::section:hover {
+    background: #e8e8e8;
+    color: #111111;
+}
+
+/* Context Menu */
+QMenu {
+    background: #ffffff;
+    border: 1px solid #b8b8b8;
+    border-radius: 6px;
+    padding: 4px;
+}
+
+QMenu::item {
+    padding: 6px 20px;
+    border-radius: 4px;
+    color: #333333;
+    font-size: 12px;
+}
+
+QMenu::item:selected {
+    background: #dddddd;
+    color: #111111;
+}
+
+QMenu::separator {
+    height: 1px;
+    background: #c4c4c4;
+    margin: 4px 8px;
+}
+
+/* Scroll Area & Scrollbars */
+QScrollArea {
+    background: transparent;
+    border: none;
+}
+
+QAbstractScrollArea {
+    background: #eeeeee;
+}
+
+QAbstractScrollArea > QWidget {
+    background: #eeeeee;
+}
+
+QScrollBar:vertical {
+    background: #f0f0f0;
+    width: 10px;
+    margin: 0;
+    border-radius: 5px;
+}
+
+QScrollBar::handle:vertical {
+    background: #c4c4c4;
+    min-height: 20px;
+    border-radius: 5px;
+}
+
+QScrollBar::handle:vertical:hover {
+    background: #999999;
+}
+
+QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+    height: 0px;
+}
+
+/* Main status bar */
+QStatusBar {
+    background: #fafafa;
+    color: #666666;
+    border-top: 1px solid #dddddd;
+    font-size: 12px;
+}
