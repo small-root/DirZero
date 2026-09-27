@@ -1,0 +1,5 @@
+/home/xiaogen/code/projects/DirZero/src/build/CMakeFiles/DirZero.dir
+/home/xiaogen/code/projects/DirZero/src/build/CMakeFiles/edit_cache.dir
+/home/xiaogen/code/projects/DirZero/src/build/CMakeFiles/rebuild_cache.dir
+/home/xiaogen/code/projects/DirZero/src/build/CMakeFiles/DirZero_autogen_timestamp_deps.dir
+/home/xiaogen/code/projects/DirZero/src/build/CMakeFiles/DirZero_autogen.dir

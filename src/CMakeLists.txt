@@ -15,7 +15,7 @@ find_package(Qt6 REQUIRED COMPONENTS
 qt_standard_project_setup()
 
 qt_add_executable(DirZero
-    src/main.cpp
+    main.cpp
 )
 
 target_link_libraries(DirZero PRIVATE
