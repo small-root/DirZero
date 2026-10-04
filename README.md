@@ -1,7 +1,10 @@
 # DirZero
 
-DirZero is a Qt 6 desktop file manager for local drives and machines reachable
-over a Tailscale network.
+A Qt 6 desktop file manager for direct, cloudless(as in without centralized storage) file transfer between machines over Tailscale using SSH/SFTP.
+
+## Description
+**DirZero** is a Qt 6 desktop file manager for direct file transfers between machines connected through a Tailscale network. It provides a graphical interface for discovering reachable machines, browsing remote filesystems, and transferring files over SSH/SFTP; allowing devices to exchange files directly over their private network without relying on cloud storage or a centralized file-transfer service.
+
 
 ## Install on Linux
 
@@ -40,6 +43,11 @@ cmake -S . -B build
 cmake --build build --parallel
 ./build/src/DirZero
 ```
+#####  **Development & Liability Disclaimer**
+Parts of this project are **AI-assisted / vibe-coded**, while other parts are manually written, reviewed, and integrated by the maintainers. The use of AI does not guarantee that the generated code is correct, secure, or suitable for production use.
+
+DirZero is provided **"as is" without warranty of any kind**. The maintainers are not responsible for any data loss, system damage, security issues, misconfiguration, or other consequences resulting from the use, modification, or deployment of this software. **Use it at your own risk and review the code before using it with important systems or data.**
+
 
 DirZero is distributed under the GNU General Public License version 3. See
 [LICENSE](LICENSE).
