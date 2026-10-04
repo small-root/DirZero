@@ -1,1 +1,0 @@
-/usr/bin/c++ -Wl,--dependency-file=CMakeFiles/DirZero.dir/link.d CMakeFiles/DirZero.dir/DirZero_autogen/mocs_compilation.cpp.o CMakeFiles/DirZero.dir/main.cpp.o -o DirZero  /usr/lib64/libQt6Widgets.so.6.11.2 /usr/lib64/libQt6Gui.so.6.11.2 /usr/lib64/libGLX.so /usr/lib64/libOpenGL.so /usr/lib64/libQt6Core.so.6.11.2

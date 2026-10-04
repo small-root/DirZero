@@ -5,3 +5,9 @@ __pycache__/
 .pytest_cache/
 *.save
 .DS_Store
+build/
+src/build/
+*.o
+*.a
+*.so
+DirZero
