@@ -36,6 +36,7 @@ private:
     int m_currentIndex;
 
     void initializeThemes();
+    QString themeConfigFilePath() const;
     QString savedThemeId() const;
     void saveThemeId(const QString& id);
 };

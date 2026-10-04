@@ -11,3 +11,5 @@ src/build/
 *.a
 *.so
 DirZero
+dist/
+build/windows-package/

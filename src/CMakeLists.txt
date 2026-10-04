@@ -110,6 +110,10 @@ target_link_libraries(DirZero PRIVATE
     PkgConfig::LIBSSH
 )
 
+install(TARGETS DirZero
+    RUNTIME DESTINATION bin
+)
+
 if(MSVC)
     target_compile_options(DirZero PRIVATE /W4)
 else()

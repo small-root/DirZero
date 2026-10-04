@@ -166,11 +166,15 @@ DirZero/
   2. `Midnight Glass` (Minimalist slate/dark theme)
   3. `Emerald Matrix` (Neon green terminal glass aesthetic)
   4. `Glass Frost Light` (High-contrast clean frosted light mode)
-- Theme preference is remembered across runs in `.active_theme`.
+- Theme preference is remembered per-user under the operating system's application configuration directory.
 
 ---
 
 ## 5. Build, Test, and Execution Instructions
+
+### User Installation
+- Linux users can run `./install.sh`; it requests GPLv3 acceptance, installs build dependencies on supported distributions, builds DirZero, and creates a per-user application-menu launcher.
+- Windows users can run the `DirZero-Setup-1.0.0.exe` produced by `.github/workflows/windows-installer.yml`. The Inno Setup wizard displays the GPLv3 license and creates a Start Menu shortcut.
 
 ### Build Prerequisites
 ```bash

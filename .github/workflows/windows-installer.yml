@@ -1,0 +1,86 @@
+name: Windows installer
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  build-windows-installer:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: UCRT64
+          update: true
+          install: >-
+            mingw-w64-ucrt-x86_64-cmake
+            mingw-w64-ucrt-x86_64-ninja
+            mingw-w64-ucrt-x86_64-gcc
+            mingw-w64-ucrt-x86_64-pkgconf
+            mingw-w64-ucrt-x86_64-qt6-base
+            mingw-w64-ucrt-x86_64-libssh
+            mingw-w64-ucrt-x86_64-binutils
+            zip
+
+      - name: Build DirZero
+        run: |
+          cmake -S . -B build/windows -G Ninja -DCMAKE_BUILD_TYPE=Release
+          cmake --build build/windows --parallel
+          cmake --install build/windows --prefix "$PWD/build/windows-package"
+
+      - name: Bundle Qt and native runtime libraries
+        run: |
+          mkdir -p build/windows-package/bin
+          windeployqt6 --release --compiler-runtime \
+            --dir build/windows-package/bin \
+            build/windows-package/bin/DirZero.exe
+          for pass in 1 2 3 4; do
+            before=$(find build/windows-package -type f -iname '*.dll' | wc -l)
+            while IFS= read -r candidate; do
+              [ -f "$candidate" ] || continue
+              while IFS= read -r dependency; do
+                case "$dependency" in
+                  "$MINGW_PREFIX"/*)
+                    [ -f "$dependency" ] && cp -n "$dependency" build/windows-package/bin/
+                    ;;
+                esac
+              done < <(ldd "$candidate" 2>/dev/null | awk '{ for (i=1; i<=NF; ++i) if ($i ~ /^\//) print $i }')
+            done < <(find build/windows-package -type f \( -iname '*.dll' -o -iname '*.exe' \))
+            after=$(find build/windows-package -type f -iname '*.dll' | wc -l)
+            [ "$after" -eq "$before" ] && break
+          done
+          test -f build/windows-package/bin/DirZero.exe
+          ldd build/windows-package/bin/DirZero.exe | grep -qi libssh
+
+      - name: Install Inno Setup
+        shell: pwsh
+        run: choco install innosetup --yes --no-progress
+
+      - name: Create GPLv3 installer
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force dist | Out-Null
+          & "$env:ProgramFiles(x86)\Inno Setup 6\ISCC.exe" packaging\windows\DirZero.iss
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: DirZero-Windows-Installer
+          path: dist/DirZero-Setup-*.exe
+          if-no-files-found: error
+
+      - name: Attach installer to tagged release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/DirZero-Setup-*.exe

@@ -3,6 +3,7 @@
 #include <QFile>
 #include <QDir>
 #include <QFileInfo>
+#include <QStandardPaths>
 
 ThemeManager* ThemeManager::s_instance = nullptr;
 
@@ -776,16 +777,26 @@ void ThemeManager::applyCurrentTheme()
 
 QString ThemeManager::savedThemeId() const
 {
-    QFile file(QStringLiteral(".active_theme"));
+    QFile file(themeConfigFilePath());
     if (file.open(QIODevice::ReadOnly)) {
         return QString::fromUtf8(file.readAll()).trimmed();
     }
     return QString();
 }
 
+QString ThemeManager::themeConfigFilePath() const
+{
+    QString configDir = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
+    if (configDir.isEmpty()) {
+        configDir = QDir::homePath() + QStringLiteral("/.config/dirzero");
+    }
+    QDir().mkpath(configDir);
+    return QDir(configDir).filePath(QStringLiteral("active_theme"));
+}
+
 void ThemeManager::saveThemeId(const QString& id)
 {
-    QFile file(QStringLiteral(".active_theme"));
+    QFile file(themeConfigFilePath());
     if (file.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
         file.write(id.toUtf8());
     }

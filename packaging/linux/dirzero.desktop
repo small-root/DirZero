@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=DirZero
+GenericName=File Manager
+Comment=Browse local drives and files across your Tailnet
+Exec=@DIRZERO_EXEC@
+Icon=dirzero
+Terminal=false
+Categories=Utility;
+StartupNotify=true
