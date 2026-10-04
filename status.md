@@ -60,10 +60,14 @@ DirZero has been completely rewritten from Python (PySide6 / Paramiko) to a high
 ---
 
 ## 4. What is to be Done Next (Roadmap for Next Agents / Developers)
-1. **Packaging & Deployment**:
+1. **Self-Machine File/Folder Permission Locking** (See detailed spec in `current_task.md`):
+   - Add right-click context menu options (`🔒 Protect / Lock`, `🔓 Unlock`) exclusively when right-clicking files/folders on the local self machine (`m_info.isSelf() == true`).
+   - Implement cross-platform OS permission modification (`chmod` on POSIX / `SetFileAttributesW` on Windows) + `PermissionPolicy` locking rule persistence.
+   - Show visual lock indicator (`🔒`) in `RemoteFSModel`.
+2. **Packaging & Deployment**:
    - Create AppImage, Flatpak, or Debian package configurations for distribution.
    - Configure Windows / macOS cross-compilation builds in CMake if required.
-2. **Optional Extended Features**:
+3. **Optional Extended Features**:
    - Double-click to download & open remote files with system default application.
    - Terminal launcher integration (e.g. launching system terminal with `ssh user@machine`).
    - Breadcrumb navigation bar above each machine's tree view for direct path jumping.
