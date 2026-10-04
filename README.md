@@ -22,16 +22,9 @@ application itself; `sudo` is only used to install missing system packages.
 
 ## Install on Windows
 
-Download and run `DirZero-Setup-1.0.0.exe`. The setup wizard displays the GPLv3
-license for acceptance, installs the app and runtime dependencies, and creates
-a DirZero Start Menu shortcut. A desktop shortcut can also be selected during
-setup.
+Windows support is currently in development. A pre-built Windows installer (.exe) is planned and will be made available once the Windows build and packaging workflow has been fully tested.
 
-Windows installers are built by the **Windows installer** GitHub Actions
-workflow. Run it manually and download the `DirZero-Windows-Installer`
-artifact, or publish a `v*` tag to attach the installer to a GitHub release.
-The Windows installer build runs on GitHub Actions; this Linux checkout cannot
-produce the Windows `.exe` locally.
+If you need to run DirZero on Windows right now, you can build it directly from source. The project is designed to be cross-platform, and no Windows-specific source modifications should be required for a standard build.
 
 ## Build from source
 
@@ -44,7 +37,7 @@ cmake --build build --parallel
 ./build/src/DirZero
 ```
 #####  **Development & Liability Disclaimer**
-Parts of this project are **AI-assisted / vibe-coded**, while other parts are manually written, reviewed, and integrated by the maintainers. The use of AI does not guarantee that the generated code is correct, secure, or suitable for production use.
+Parts of this project are **AI-assisted / vibe-coded**, while other parts are manually written, reviewed, and integrated by the maintainers. The use of AI does not guarantee that the generated code is correct, secure, or suitable for production use. Clarfied for those AI-Phobic devs.
 
 DirZero is provided **"as is" without warranty of any kind**. The maintainers are not responsible for any data loss, system damage, security issues, misconfiguration, or other consequences resulting from the use, modification, or deployment of this software. **Use it at your own risk and review the code before using it with important systems or data.**
 
