@@ -3,25 +3,23 @@
 #include <QFrame>
 #include <QLineEdit>
 #include <QPushButton>
-#include <QCheckBox>
 #include <QLabel>
 #include <QToolButton>
-#include "../security/CredentialStore.hpp"
 
 class MachineAuthBar : public QFrame {
     Q_OBJECT
 
 public:
-    explicit MachineAuthBar(const QString& hostIp, const QString& hostName, QWidget* parent = nullptr);
+    explicit MachineAuthBar(QWidget* parent = nullptr);
     ~MachineAuthBar() override = default;
 
-    void loadCredentials(const std::optional<Credential>& cred);
+    void setDefaultKeyPath(const QString& keyPath);
     void showAlert(const QString& message);
     void clearAlert();
     void clearPassword();
 
 signals:
-    void authRequested(const QString& username, const QString& password, const QString& keyPath, bool remember);
+    void authRequested(const QString& username, const QString& password, const QString& keyPath);
     void dismissed();
 
 private slots:
@@ -30,8 +28,6 @@ private slots:
     void onSubmit();
 
 private:
-    QString m_hostIp;
-    QString m_hostName;
     bool m_isPasswordVisible;
 
     QLabel* m_titleLabel;
@@ -42,7 +38,6 @@ private:
     QPushButton* m_btnTogglePass;
     QLineEdit* m_inputKey;
     QPushButton* m_btnBrowseKey;
-    QCheckBox* m_chkRemember;
     QPushButton* m_btnConnect;
 
     void setupUi();

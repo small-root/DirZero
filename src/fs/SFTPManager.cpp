@@ -6,7 +6,7 @@
 #include <QFileInfo>
 #include <QDir>
 #include <algorithm>
-#include "../security/CredentialStore.hpp"
+#include "../security/SshKeyDiscovery.hpp"
 
 SFTPManager::SFTPManager(const QString& host,
                          int port,
@@ -74,7 +74,7 @@ bool SFTPManager::authenticate(QString& errorOut)
     }
 
     // Also check standard key paths explicitly
-    for (const QString& stdKey : CredentialStore::getDefaultSshKeys()) {
+    for (const QString& stdKey : SshKeyDiscovery::defaultKeyPaths()) {
         QByteArray kBytes = stdKey.toUtf8();
         ssh_options_set(m_ssh, SSH_OPTIONS_IDENTITY, kBytes.constData());
         auth = ssh_userauth_publickey_auto(m_ssh, nullptr, nullptr);

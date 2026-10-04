@@ -9,6 +9,33 @@
 #include <QCloseEvent>
 #include <QThreadPool>
 #include <QMap>
+#include <QFileSystemModel>
+#include <QStorageInfo>
+#include <QStackedWidget>
+#include <QGridLayout>
+#include <QTreeView>
+#include <QDir>
+#include <QSet>
+#include <QFileInfo>
+#include <QDesktopServices>
+#include <QUrl>
+#include <QResizeEvent>
+
+namespace {
+QString formatStorageSize(qint64 bytes)
+{
+    constexpr qint64 kibibyte = 1024;
+    constexpr qint64 mebibyte = kibibyte * 1024;
+    constexpr qint64 gibibyte = mebibyte * 1024;
+    if (bytes >= gibibyte) {
+        return QStringLiteral("%1 GB").arg(QString::number(bytes / static_cast<double>(gibibyte), 'f', 1));
+    }
+    if (bytes >= mebibyte) {
+        return QStringLiteral("%1 MB").arg(QString::number(bytes / static_cast<double>(mebibyte), 'f', 1));
+    }
+    return QStringLiteral("%1 KB").arg(QString::number(bytes / static_cast<double>(kibibyte), 'f', 1));
+}
+}
 
 Dir2ZeroWindow::Dir2ZeroWindow(const QString& defaultUser,
                                const QString& defaultKey,
@@ -17,6 +44,27 @@ Dir2ZeroWindow::Dir2ZeroWindow(const QString& defaultUser,
     , m_defaultUser(defaultUser)
     , m_defaultKey(defaultKey)
     , m_isDiscovering(false)
+    , m_isExplorerView(true)
+    , m_discoveryTimer(nullptr)
+    , m_badgeOnline(nullptr)
+    , m_badgeSshOk(nullptr)
+    , m_badgeUnavailable(nullptr)
+    , m_btnTheme(nullptr)
+    , m_btnScan(nullptr)
+    , m_btnViewMode(nullptr)
+    , m_viewStack(nullptr)
+    , m_localDrivesPage(nullptr)
+    , m_localBrowsePage(nullptr)
+    , m_driveGrid(nullptr)
+    , m_localFileModel(nullptr)
+    , m_localTreeView(nullptr)
+    , m_localPathLabel(nullptr)
+    , m_scrollArea(nullptr)
+    , m_gridContainer(nullptr)
+    , m_progressDock(nullptr)
+    , m_progressPathLabel(nullptr)
+    , m_progressLabel(nullptr)
+    , m_progressBar(nullptr)
 {
     setupUi();
 
@@ -41,6 +89,9 @@ Dir2ZeroWindow::~Dir2ZeroWindow()
 
 void Dir2ZeroWindow::setupUi()
 {
+#if defined(Q_OS_LINUX)
+    setAttribute(Qt::WA_TranslucentBackground);
+#endif
     setWindowTitle(QStringLiteral("DirZero — Tailscale Remote File Manager"));
     resize(1200, 820);
     setMinimumSize(880, 620);
@@ -63,10 +114,14 @@ void Dir2ZeroWindow::setupUi()
 
     auto titleBox = new QVBoxLayout();
     titleBox->setSpacing(2);
-    auto titleLabel = new QLabel(QStringLiteral("DIRZERO"), this);
-    titleLabel->setStyleSheet(QStringLiteral("color: #38bdf8; font-size: 22px; font-weight: 900; letter-spacing: 1.5px;"));
-    auto subtitleLabel = new QLabel(QStringLiteral("Dynamic Tailscale Remote File Manager & Network Diagnostics"), this);
-    subtitleLabel->setStyleSheet(QStringLiteral("color: #94a3b8; font-size: 12px; font-weight: 500;"));
+    auto titleLabel = new QLabel(QStringLiteral("DirZero"), this);
+    titleLabel->setObjectName(QStringLiteral("appTitle"));
+    titleLabel->setStyleSheet(QStringLiteral("font-size: 22px; font-weight: 800; letter-spacing: 0.4px;"));
+    auto subtitleLabel = new QLabel(QStringLiteral("Your files, on this PC and across your Tailnet"), this);
+    subtitleLabel->setObjectName(QStringLiteral("appSubtitle"));
+    subtitleLabel->setStyleSheet(QStringLiteral("font-size: 12px; font-weight: 500;"));
+    subtitleLabel->setWordWrap(true);
+    subtitleLabel->setMaximumWidth(280);
     titleBox->addWidget(titleLabel);
     titleBox->addWidget(subtitleLabel);
     headerLayout->addLayout(titleBox);
@@ -107,6 +162,12 @@ void Dir2ZeroWindow::setupUi()
     m_btnTheme->setMenu(themeMenu);
     headerLayout->addWidget(m_btnTheme);
 
+    m_btnViewMode = new QPushButton(QStringLiteral("🌐 Network"), this);
+    m_btnViewMode->setFixedHeight(34);
+    m_btnViewMode->setToolTip(QStringLiteral("Switch between This PC and Tailnet devices"));
+    connect(m_btnViewMode, &QPushButton::clicked, this, &Dir2ZeroWindow::toggleViewMode);
+    headerLayout->addWidget(m_btnViewMode);
+
     connect(ThemeManager::instance(), &ThemeManager::themeChanged,
             this, &Dir2ZeroWindow::onThemeChanged);
     updateThemeButtonLabel();
@@ -119,12 +180,93 @@ void Dir2ZeroWindow::setupUi()
         startDiscovery(false);
     });
     headerLayout->addWidget(m_btnScan);
+    updateViewMode();
 
     baseLayout->addWidget(headerWidget);
 
     // =========================================================================
-    // Responsive Machine Card Grid inside ScrollArea
+    // This PC / Tailnet views
     // =========================================================================
+    m_viewStack = new QStackedWidget(this);
+    baseLayout->addWidget(m_viewStack, 1);
+
+    auto localPage = new QWidget(m_viewStack);
+    auto localPageLayout = new QVBoxLayout(localPage);
+    localPageLayout->setContentsMargins(8, 8, 8, 8);
+    localPageLayout->setSpacing(12);
+
+    auto localHeading = new QLabel(QStringLiteral("This PC"), localPage);
+    localHeading->setObjectName(QStringLiteral("viewHeading"));
+    auto localDescription = new QLabel(QStringLiteral("Browse drives and folders on this computer."), localPage);
+    localDescription->setObjectName(QStringLiteral("viewDescription"));
+    auto localTitleRow = new QHBoxLayout();
+    auto localTitleBox = new QVBoxLayout();
+    localTitleBox->addWidget(localHeading);
+    localTitleBox->addWidget(localDescription);
+    localTitleRow->addLayout(localTitleBox, 1);
+    auto refreshDrivesButton = new QPushButton(QStringLiteral("↻ Refresh drives"), localPage);
+    connect(refreshDrivesButton, &QPushButton::clicked, this, &Dir2ZeroWindow::populateLocalDrives);
+    localTitleRow->addWidget(refreshDrivesButton, 0, Qt::AlignVCenter);
+    localPageLayout->addLayout(localTitleRow);
+
+    m_localDrivesPage = new QWidget(localPage);
+    m_driveGrid = new QGridLayout(m_localDrivesPage);
+    m_driveGrid->setContentsMargins(0, 8, 0, 8);
+    m_driveGrid->setHorizontalSpacing(14);
+    m_driveGrid->setVerticalSpacing(14);
+    localPageLayout->addWidget(m_localDrivesPage, 1);
+    populateLocalDrives();
+    m_viewStack->addWidget(localPage);
+
+    m_localBrowsePage = new QWidget(m_viewStack);
+    auto browseLayout = new QVBoxLayout(m_localBrowsePage);
+    browseLayout->setContentsMargins(8, 8, 8, 8);
+    browseLayout->setSpacing(10);
+    auto browseToolbar = new QHBoxLayout();
+    auto backToDrivesButton = new QPushButton(QStringLiteral("← This PC"), m_localBrowsePage);
+    connect(backToDrivesButton, &QPushButton::clicked, this, [this]() {
+        m_viewStack->setCurrentIndex(0);
+    });
+    auto upButton = new QPushButton(QStringLiteral("↑ Up"), m_localBrowsePage);
+    connect(upButton, &QPushButton::clicked, this, [this]() {
+        QDir current(m_localFileModel->filePath(m_localTreeView->rootIndex()));
+        if (current.cdUp()) {
+            openLocalDrive(current.absolutePath());
+        }
+    });
+    m_localPathLabel = new QLabel(m_localBrowsePage);
+    m_localPathLabel->setObjectName(QStringLiteral("localPathLabel"));
+    m_localPathLabel->setTextInteractionFlags(Qt::TextSelectableByMouse);
+    browseToolbar->addWidget(backToDrivesButton);
+    browseToolbar->addWidget(upButton);
+    browseToolbar->addWidget(m_localPathLabel, 1);
+    browseLayout->addLayout(browseToolbar);
+    m_localFileModel = new QFileSystemModel(this);
+    m_localFileModel->setFilter(QDir::AllEntries | QDir::NoDotAndDotDot | QDir::AllDirs | QDir::Files);
+    m_localTreeView = new QTreeView(m_localBrowsePage);
+    m_localTreeView->setModel(m_localFileModel);
+    m_localTreeView->setSortingEnabled(true);
+    m_localTreeView->sortByColumn(0, Qt::AscendingOrder);
+    m_localTreeView->setAlternatingRowColors(true);
+    m_localTreeView->setRootIsDecorated(false);
+    m_localTreeView->setColumnWidth(0, 300);
+    for (int column = 1; column < m_localFileModel->columnCount(); ++column) {
+        m_localTreeView->setColumnHidden(column, column > 2);
+    }
+    connect(m_localTreeView, &QTreeView::doubleClicked, this, [this](const QModelIndex& index) {
+        const QString path = m_localFileModel->filePath(index);
+        const QFileInfo info(path);
+        if (info.isDir()) {
+            m_localTreeView->setRootIndex(index);
+            m_localPathLabel->setText(path);
+        } else {
+            QDesktopServices::openUrl(QUrl::fromLocalFile(path));
+        }
+    });
+    browseLayout->addWidget(m_localTreeView, 1);
+    m_viewStack->addWidget(m_localBrowsePage);
+
+    // Tailnet machine card grid
     m_scrollArea = new QScrollArea(this);
     m_scrollArea->setWidgetResizable(true);
     m_scrollArea->setFrameShape(QFrame::NoFrame);
@@ -133,7 +275,8 @@ void Dir2ZeroWindow::setupUi()
 
     m_gridContainer = new ResponsiveGridContainer(m_scrollArea, 380);
     m_scrollArea->setWidget(m_gridContainer);
-    baseLayout->addWidget(m_scrollArea, 1);
+    m_viewStack->addWidget(m_scrollArea);
+    m_viewStack->setCurrentIndex(0);
 
     // =========================================================================
     // In-App Floating Transfer Progress Dock
@@ -171,7 +314,122 @@ void Dir2ZeroWindow::setupUi()
 void Dir2ZeroWindow::updateThemeButtonLabel()
 {
     ThemeDefinition curr = ThemeManager::instance()->currentTheme();
-    m_btnTheme->setText(QStringLiteral("🎨 %1 ▾").arg(curr.name));
+    m_btnTheme->setText(width() < 1050
+        ? QStringLiteral("🎨 Theme ▾")
+        : QStringLiteral("🎨 %1 ▾").arg(curr.name));
+}
+
+void Dir2ZeroWindow::toggleViewMode()
+{
+    m_isExplorerView = !m_isExplorerView;
+    updateViewMode();
+}
+
+void Dir2ZeroWindow::updateViewMode()
+{
+    if (m_isExplorerView) {
+        m_btnViewMode->setText(QStringLiteral("🌐 Network"));
+        m_btnViewMode->setToolTip(QStringLiteral("Switch to Tailnet devices"));
+        if (m_viewStack && m_viewStack->currentWidget() == m_scrollArea) {
+            m_viewStack->setCurrentWidget(m_localDrivesPage->parentWidget());
+        }
+    } else {
+        m_btnViewMode->setText(QStringLiteral("💽 This PC"));
+        m_btnViewMode->setToolTip(QStringLiteral("Switch to local drives"));
+        if (m_viewStack) {
+            m_viewStack->setCurrentWidget(m_scrollArea);
+        }
+    }
+    updateResponsiveHeader();
+}
+
+void Dir2ZeroWindow::updateResponsiveHeader()
+{
+    if (!m_badgeOnline || !m_badgeSshOk || !m_badgeUnavailable ||
+        !m_btnScan || !m_btnTheme) {
+        return;
+    }
+    const bool showStats = !m_isExplorerView && width() >= 1120;
+    m_badgeOnline->setVisible(showStats);
+    m_badgeSshOk->setVisible(showStats);
+    m_badgeUnavailable->setVisible(showStats);
+    m_btnScan->setVisible(!m_isExplorerView);
+    m_btnScan->setText(width() < 1000
+        ? QStringLiteral("↻ Scan")
+        : QStringLiteral("↻ Refresh Tailnet"));
+    updateThemeButtonLabel();
+}
+
+void Dir2ZeroWindow::resizeEvent(QResizeEvent* event)
+{
+    QMainWindow::resizeEvent(event);
+    updateResponsiveHeader();
+}
+
+void Dir2ZeroWindow::openLocalDrive(const QString& rootPath)
+{
+    const QModelIndex rootIndex = m_localFileModel->setRootPath(rootPath);
+    m_localTreeView->setRootIndex(rootIndex);
+    m_localPathLabel->setText(QDir::toNativeSeparators(rootPath));
+    m_viewStack->setCurrentWidget(m_localBrowsePage);
+}
+
+void Dir2ZeroWindow::populateLocalDrives()
+{
+    while (QLayoutItem* item = m_driveGrid->takeAt(0)) {
+        if (QWidget* widget = item->widget()) {
+            widget->deleteLater();
+        }
+        delete item;
+    }
+
+    QSet<QString> seenPaths;
+    int driveIndex = 0;
+    for (const QStorageInfo& volume : QStorageInfo::mountedVolumes()) {
+        if (!volume.isValid() || !volume.isReady()) {
+            continue;
+        }
+
+        const QString rootPath = QDir::cleanPath(volume.rootPath());
+        if (rootPath.isEmpty() || seenPaths.contains(rootPath)) {
+            continue;
+        }
+        seenPaths.insert(rootPath);
+
+        const QString title = volume.name().isEmpty()
+            ? QDir::toNativeSeparators(rootPath)
+            : volume.name();
+        const qint64 total = volume.bytesTotal();
+        const qint64 available = volume.bytesAvailable();
+        QString spaceText = QStringLiteral("Storage information unavailable");
+        if (total > 0 && available >= 0) {
+            spaceText = QStringLiteral("%1 free of %2")
+                .arg(formatStorageSize(available), formatStorageSize(total));
+        }
+
+        auto driveButton = new QPushButton(
+            QStringLiteral("💽  %1\n%2\n%3")
+                .arg(title, QDir::toNativeSeparators(rootPath), spaceText),
+            m_localDrivesPage);
+        driveButton->setObjectName(QStringLiteral("driveCard"));
+        driveButton->setMinimumHeight(104);
+        driveButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+        driveButton->setToolTip(QStringLiteral("Browse %1").arg(QDir::toNativeSeparators(rootPath)));
+        connect(driveButton, &QPushButton::clicked, this, [this, rootPath]() {
+            openLocalDrive(rootPath);
+        });
+        m_driveGrid->addWidget(driveButton, driveIndex / 2, driveIndex % 2);
+        ++driveIndex;
+    }
+
+    if (driveIndex == 0) {
+        auto emptyLabel = new QLabel(QStringLiteral("No mounted drives are available."), m_localDrivesPage);
+        emptyLabel->setObjectName(QStringLiteral("viewDescription"));
+        m_driveGrid->addWidget(emptyLabel, 0, 0, 1, 2);
+    }
+    m_driveGrid->setColumnStretch(0, 1);
+    m_driveGrid->setColumnStretch(1, 1);
+    m_driveGrid->setRowStretch(m_driveGrid->rowCount(), 1);
 }
 
 void Dir2ZeroWindow::onThemeChanged(const QString& themeId, const QString& themeName)
@@ -240,8 +498,7 @@ void Dir2ZeroWindow::onDiscoveryResult(const QList<MachineInfo>& machines)
             panel->updateMachineInfo(m);
             if (panel->machineInfo().sshAvailable() != m.sshAvailable()) {
                 if (m.sshAvailable() && panel->currentState() == MachineState::OnlineSshUnavailable) {
-                    panel->setState(MachineState::OnlineSshOk);
-                    panel->startConnection();
+                    panel->setState(MachineState::AuthRequired, QStringLiteral("Enter your credentials to connect."));
                 } else if (!m.sshAvailable() && !panel->isConnected()) {
                     panel->setState(MachineState::OnlineSshUnavailable);
                 }
@@ -278,7 +535,7 @@ void Dir2ZeroWindow::onDiscoveryFinished()
 {
     m_isDiscovering = false;
     m_btnScan->setEnabled(true);
-    m_btnScan->setText(QStringLiteral("↻ Refresh Tailnet"));
+    updateResponsiveHeader();
 }
 
 void Dir2ZeroWindow::startTransferMonitor(const QString& srcPath,

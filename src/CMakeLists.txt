@@ -27,7 +27,7 @@ set(DIRZERO_SOURCES
     core/AccessRule.cpp
     core/PermissionPolicy.cpp
 
-    security/CredentialStore.cpp
+    security/SshKeyDiscovery.cpp
 
     fs/FSNode.cpp
     fs/SFTPManager.cpp
@@ -59,7 +59,7 @@ set(DIRZERO_HEADERS
     core/AccessRule.hpp
     core/PermissionPolicy.hpp
 
-    security/CredentialStore.hpp
+    security/SshKeyDiscovery.hpp
 
     fs/RemoteEntry.hpp
     fs/FSNode.hpp

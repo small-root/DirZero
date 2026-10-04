@@ -5,7 +5,7 @@ DirZero has been completely rewritten from Python (PySide6 / Paramiko) to a high
 
 - **Target Architecture**: C++17 / Qt6 (`Core`, `Gui`, `Widgets`, `Network`) + `libssh`
 - **Build System**: CMake (tested and building cleanly with GCC/Clang on Linux)
-- **UI Design System**: Glassmorphic Cyber Dark theme with real-time glows, custom drag-preview pills, interactive authentication bar, and multi-machine responsive grid layout.
+- **UI Design System**: Multiple themes, session-only SSH authentication, a This PC drive browser, and a responsive Tailnet machine grid.
 
 ---
 
@@ -18,8 +18,8 @@ DirZero has been completely rewritten from Python (PySide6 / Paramiko) to a high
 - `AccessRule.hpp / .cpp`: Path-based permission rules (`AllowAll`, `ReadOnly`, `DenyAll`).
 - `PermissionPolicy.hpp / .cpp`: Security enforcement engine preventing destructive operations on critical system directories (`/etc`, `/bin`, `C:\Windows`, etc.) and validating file creation, rename, delete, and copy/move operations.
 
-### Credential & Security Layer (`src/security/`)
-- `CredentialStore.hpp / .cpp`: Multi-platform persistent credential storage (`~/.config/dirzero/credentials.json` on Linux/POSIX, `%APPDATA%\DirZero` on Windows), standard SSH key discovery (`~/.ssh/id_ed25519`, `~/.ssh/id_rsa`, etc.), and file permission enforcement (`0700` / `0600`).
+### SSH Key Discovery (`src/security/`)
+- `SshKeyDiscovery.hpp / .cpp`: Discovers standard SSH key paths when available; passwords and connection details are not persisted.
 
 ### Filesystem & Remote Protocol (`src/fs/`)
 - `RemoteEntry.hpp`: Metadata container for remote items (name, path, isDirectory, size, mtime, POSIX mode, permissions).
@@ -42,9 +42,9 @@ DirZero has been completely rewritten from Python (PySide6 / Paramiko) to a high
 - `ResponsiveGridContainer.hpp / .cpp`: Auto-fitting responsive grid for machine cards.
 - `RemoteClipboard.hpp / .cpp`: Inter-panel copy/cut/paste clipboard service.
 - `RemoteFileTreeView.hpp / .cpp`: Drag & Drop enabled tree view with custom frosted glass preview rendering and full keyboard shortcuts (`Ctrl+C`, `Ctrl+X`, `Ctrl+V`, `F2`, `F5`, `Delete`).
-- `MachineAuthBar.hpp / .cpp`: Collapsible glassmorphic authentication bar supporting username, password, private key file selection, and credential persistence.
+- `MachineAuthBar.hpp / .cpp`: Session-only authentication form supporting username, password, and private key selection.
 - `MachinePanelWidget.hpp / .cpp`: Machine card component with dynamic state glow borders, context menus, directory navigation, inline retry, and file operations.
-- `Dir2ZeroWindow.hpp / .cpp`: Main window shell featuring header badges (Online / Reachable / Unavailable), scan button, theme switcher menu, and bottom dock for real-time transfer progress and transfer speed metrics.
+- `Dir2ZeroWindow.hpp / .cpp`: Main window with the mounted-drive This PC browser, one-button Tailnet view switcher, network status, theme menu, and transfer dock.
 - `main.cpp`: Entry point with CLI arguments (`--user`, `--key`) and theme initialization.
 
 ---

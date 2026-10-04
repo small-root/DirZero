@@ -8,10 +8,15 @@
 #include <QTimer>
 #include <QList>
 #include <QSet>
+#include <QGridLayout>
 #include <memory>
 #include "../core/MachineInfo.hpp"
 #include "../helpers/ResponsiveGridContainer.hpp"
 #include "MachinePanelWidget.hpp"
+
+class QFileSystemModel;
+class QStackedWidget;
+class QTreeView;
 
 class Dir2ZeroWindow : public QMainWindow {
     Q_OBJECT
@@ -37,6 +42,7 @@ public:
 
 protected:
     void closeEvent(QCloseEvent* event) override;
+    void resizeEvent(QResizeEvent* event) override;
 
 private slots:
     void onDiscoveryResult(const QList<MachineInfo>& machines);
@@ -45,11 +51,14 @@ private slots:
 
     void onThemeChanged(const QString& themeId, const QString& themeName);
     void onCycleTheme();
+    void toggleViewMode();
+    void openLocalDrive(const QString& rootPath);
 
 private:
     QString m_defaultUser;
     QString m_defaultKey;
     bool m_isDiscovering;
+    bool m_isExplorerView;
 
     QTimer* m_discoveryTimer;
     QList<MachinePanelWidget*> m_panels;
@@ -60,8 +69,18 @@ private:
     QLabel* m_badgeUnavailable;
     QPushButton* m_btnTheme;
     QPushButton* m_btnScan;
+    QPushButton* m_btnViewMode;
 
-    // Grid Container & Scroll Area
+    // Explorer and Tailnet view stack
+    QStackedWidget* m_viewStack;
+    QWidget* m_localDrivesPage;
+    QWidget* m_localBrowsePage;
+    QGridLayout* m_driveGrid;
+    QFileSystemModel* m_localFileModel;
+    QTreeView* m_localTreeView;
+    QLabel* m_localPathLabel;
+
+    // Tailnet grid
     QScrollArea* m_scrollArea;
     ResponsiveGridContainer* m_gridContainer;
 
@@ -73,4 +92,7 @@ private:
 
     void setupUi();
     void updateThemeButtonLabel();
+    void updateViewMode();
+    void updateResponsiveHeader();
+    void populateLocalDrives();
 };

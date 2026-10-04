@@ -4,10 +4,8 @@
 #include <QFileDialog>
 #include <QDir>
 
-MachineAuthBar::MachineAuthBar(const QString& hostIp, const QString& hostName, QWidget* parent)
+MachineAuthBar::MachineAuthBar(QWidget* parent)
     : QFrame(parent)
-    , m_hostIp(hostIp)
-    , m_hostName(hostName)
     , m_isPasswordVisible(false)
 {
     setupUi();
@@ -89,13 +87,13 @@ void MachineAuthBar::setupUi()
 
     mainLayout->addLayout(row2);
 
-    // Row 3: Remember checkbox & Connect Button
+    // Row 3: Session-only notice & Connect Button
     auto row3 = new QHBoxLayout();
     row3->setSpacing(8);
 
-    m_chkRemember = new QCheckBox(QStringLiteral("Save credentials"), this);
-    m_chkRemember->setChecked(true);
-    row3->addWidget(m_chkRemember);
+    auto sessionNotice = new QLabel(QStringLiteral("Sign-in is only for this session"), this);
+    sessionNotice->setObjectName(QStringLiteral("sessionNotice"));
+    row3->addWidget(sessionNotice);
 
     row3->addStretch();
 
@@ -109,12 +107,10 @@ void MachineAuthBar::setupUi()
     mainLayout->addLayout(row3);
 }
 
-void MachineAuthBar::loadCredentials(const std::optional<Credential>& cred)
+void MachineAuthBar::setDefaultKeyPath(const QString& keyPath)
 {
-    if (cred.has_value()) {
-        if (!cred->username.isEmpty()) m_inputUser->setText(cred->username);
-        if (!cred->password.isEmpty()) m_inputPass->setText(cred->password);
-        if (!cred->keyPath.isEmpty()) m_inputKey->setText(cred->keyPath);
+    if (m_inputKey->text().isEmpty() && !keyPath.isEmpty()) {
+        m_inputKey->setText(keyPath);
     }
 }
 
@@ -169,7 +165,5 @@ void MachineAuthBar::onSubmit()
     }
     QString pass = m_inputPass->text();
     QString key = m_inputKey->text().trimmed();
-    bool remember = m_chkRemember->isChecked();
-
-    emit authRequested(user, pass, key, remember);
+    emit authRequested(user, pass, key);
 }

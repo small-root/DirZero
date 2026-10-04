@@ -63,7 +63,7 @@ public:
     void notifyStatus(const QString& message);
 
 private slots:
-    void onAuthRequested(const QString& username, const QString& password, const QString& keyPath, bool remember);
+    void onAuthRequested(const QString& username, const QString& password, const QString& keyPath);
     void onActionRetryClicked();
     void onTreeExpanded(const QModelIndex& index);
     void onCustomContextMenuRequested(const QPoint& pos);

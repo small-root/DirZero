@@ -13,12 +13,24 @@ ThemeManager::ThemeManager(QObject* parent)
     initializeThemes();
 
     QString savedId = savedThemeId();
+    if (savedId == QStringLiteral("apple_glass")) {
+        savedId = QStringLiteral("light_theme");
+        saveThemeId(savedId);
+    }
     if (!savedId.isEmpty()) {
         for (int i = 0; i < m_themes.size(); ++i) {
             if (m_themes[i].id == savedId) {
                 m_currentIndex = i;
-                break;
+                return;
             }
+        }
+    }
+
+    // Use Emerald Matrix unless the user has previously selected a theme.
+    for (int i = 0; i < m_themes.size(); ++i) {
+        if (m_themes[i].id == QStringLiteral("emerald_matrix")) {
+            m_currentIndex = i;
+            break;
         }
     }
 }
@@ -34,7 +46,211 @@ ThemeManager* ThemeManager::instance()
 void ThemeManager::initializeThemes()
 {
     // =========================================================================
-    // 1. Cyber Glass Dark (Flagship Glassmorphic Aesthetic)
+    // 1. Light Theme (Apple-inspired translucent light surfaces)
+    // =========================================================================
+    const QString lightTheme = QStringLiteral(R"(
+QMainWindow {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+        stop:0 rgba(245,247,251,0.88),
+        stop:0.45 rgba(237,242,248,0.84),
+        stop:1 rgba(232,237,245,0.88));
+}
+QWidget {
+    font-family: "SF Pro Display", "SF Pro Text", "Inter", "Segoe UI", sans-serif;
+    color: #1f2937;
+}
+QWidget#headerWidget {
+    background: rgba(255,255,255,0.46);
+    border: 1px solid rgba(255,255,255,0.55);
+    border-radius: 18px;
+    padding: 12px 20px;
+    box-shadow: 0 12px 32px rgba(15, 23, 42, 0.08);
+}
+QFrame#machinePanel {
+    background: rgba(255,255,255,0.34);
+    border: 1px solid rgba(255,255,255,0.68);
+    border-radius: 20px;
+    padding: 16px;
+    box-shadow: 0 12px 28px rgba(15, 23, 42, 0.06);
+}
+QFrame#machinePanel:hover {
+    border-color: rgba(59, 130, 246, 0.45);
+    background: rgba(255,255,255,0.42);
+}
+QFrame#machinePanel[machineState="CONNECTED"] {
+    border: 1px solid rgba(16, 185, 129, 0.45);
+    background: rgba(230, 255, 245, 0.45);
+}
+QFrame#machinePanel[machineState="ONLINE_SSH_UNAVAILABLE"] {
+    border: 1px dashed rgba(245, 158, 11, 0.58);
+    background: rgba(255, 248, 220, 0.36);
+}
+QFrame#machinePanel[machineState="AUTH_REQUIRED"] {
+    border: 1px solid rgba(251, 146, 60, 0.55);
+    background: rgba(255, 244, 214, 0.35);
+}
+QFrame#machinePanel[machineState="ERROR"] {
+    border: 1px solid rgba(239, 68, 68, 0.45);
+    background: rgba(255, 236, 236, 0.32);
+}
+QLabel#machineHeading {
+    color: #111827;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+}
+QLabel#statusLabel { font-size: 12px; font-weight: 700; }
+QLabel#ipHeading {
+    color: #64748b;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+QLabel#ipAddress {
+    background: rgba(255,255,255,0.48);
+    color: #1d4ed8;
+    border: 1px solid rgba(148,163,184,0.28);
+    border-radius: 9px;
+    font-family: "SF Mono", "Monaco", "JetBrains Mono", monospace;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 5px 10px;
+}
+QFrame#authFrame {
+    background: rgba(255,255,255,0.38);
+    border: 1px solid rgba(148, 163, 184, 0.4);
+    border-radius: 14px;
+    padding: 10px;
+}
+QLineEdit {
+    background: rgba(255,255,255,0.62);
+    color: #111827;
+    border: 1px solid rgba(148,163,184,0.35);
+    border-radius: 10px;
+    padding: 7px 11px;
+    font-size: 12px;
+    min-height: 30px;
+}
+QLineEdit:focus {
+    background: rgba(255,255,255,0.78);
+    border-color: rgba(59,130,246,0.55);
+}
+QPushButton {
+    background: rgba(255,255,255,0.52);
+    color: #0f172a;
+    border: 1px solid rgba(148,163,184,0.32);
+    border-radius: 10px;
+    padding: 6px 12px;
+    min-height: 30px;
+    font-size: 12px;
+    font-weight: 600;
+}
+QPushButton:hover {
+    background: rgba(255,255,255,0.72);
+    border-color: rgba(59,130,246,0.42);
+}
+QPushButton:pressed {
+    background: rgba(219,234,254,0.9);
+}
+QPushButton:disabled {
+    background: rgba(226,232,240,0.5);
+    color: rgba(71, 85, 105, 0.8);
+}
+QPushButton#disconnect {
+    background: rgba(254, 226, 226, 0.75);
+    color: #991b1b;
+    border: 1px solid rgba(239, 68, 68, 0.35);
+}
+QPushButton#disconnect:hover {
+    background: rgba(254, 202, 202, 0.92);
+    color: #7f1d1d;
+}
+QTreeView {
+    background: rgba(255,255,255,0.34);
+    color: #1f2937;
+    border: 1px solid rgba(148,163,184,0.35);
+    border-radius: 12px;
+    padding: 4px;
+    outline: none;
+}
+QTreeView::item {
+    padding: 6px 8px;
+    border-radius: 7px;
+}
+QTreeView::item:hover {
+    background: rgba(191,219,254,0.24);
+}
+QTreeView::item:selected {
+    background: rgba(96,165,250,0.28);
+    color: #0f172a;
+}
+QHeaderView::section {
+    background: rgba(255,255,255,0.45);
+    color: #475569;
+    padding: 7px 8px;
+    border: none;
+    border-right: 1px solid rgba(148,163,184,0.25);
+    border-bottom: 1px solid rgba(148,163,184,0.25);
+    font-size: 11px;
+    font-weight: 700;
+}
+QFrame#progressDock {
+    background: rgba(255,255,255,0.52);
+    border: 1px solid rgba(148,163,184,0.34);
+    border-radius: 16px;
+    padding: 8px;
+    box-shadow: 0 12px 28px rgba(15, 23, 42, 0.06);
+}
+QProgressBar {
+    background: rgba(255,255,255,0.65);
+    border: 1px solid rgba(148,163,184,0.32);
+    border-radius: 8px;
+    text-align: center;
+    color: #0f172a;
+    font-size: 11px;
+    font-weight: 700;
+    height: 18px;
+}
+QProgressBar::chunk {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #60a5fa, stop:1 #2dd4bf);
+    border-radius: 7px;
+}
+QMenu {
+    background: rgba(255,255,255,0.92);
+    border: 1px solid rgba(148,163,184,0.4);
+    border-radius: 12px;
+    padding: 6px;
+}
+QMenu::item {
+    padding: 8px 18px;
+    border-radius: 8px;
+    color: #0f172a;
+}
+QMenu::item:selected {
+    background: rgba(191,219,254,0.72);
+    color: #0f172a;
+}
+QScrollBar:vertical {
+    background: rgba(148,163,184,0.12);
+    width: 10px;
+    border-radius: 5px;
+}
+QScrollBar::handle:vertical {
+    background: rgba(148,163,184,0.45);
+    min-height: 24px;
+    border-radius: 5px;
+}
+QStatusBar {
+    background: rgba(255,255,255,0.42);
+    color: #475569;
+    border-top: 1px solid rgba(148,163,184,0.25);
+    font-size: 12px;
+}
+)" );
+
+    // =========================================================================
+    // 2. Cyber Glass Dark (Flagship Glassmorphic Aesthetic)
     // =========================================================================
     const QString cyberGlassDark = QStringLiteral(R"(
 /* DirZero - Cyber Glass Dark Theme */
@@ -368,6 +584,24 @@ QStatusBar { background: #07090e; color: #94a3b8; border-top: 1px solid #161f30;
     const QString emeraldGlass = QStringLiteral(R"(
 QMainWindow { background: #060e0a; }
 QWidget { font-family: "SF Pro Display", "Inter", sans-serif; color: #ecfdf5; }
+QLabel#viewHeading { color: #ecfdf5; font-size: 26px; font-weight: 700; }
+QLabel#viewDescription { color: #94a3b8; font-size: 13px; }
+QLabel#localPathLabel { color: #a7f3d0; font-size: 12px; padding: 6px 10px; }
+QPushButton#driveCard {
+    background: rgba(16, 38, 28, 0.78);
+    color: #ecfdf5;
+    border: 1px solid rgba(52, 211, 153, 0.22);
+    border-radius: 14px;
+    text-align: left;
+    padding: 18px;
+    font-size: 13px;
+    font-weight: 600;
+}
+QPushButton#driveCard:hover {
+    background: rgba(20, 55, 39, 0.9);
+    border-color: rgba(52, 211, 153, 0.55);
+}
+QLabel#sessionNotice { color: #94a3b8; font-size: 11px; }
 QWidget#headerWidget {
     background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #0d1f17, stop:1 #081610);
     border: 1px solid rgba(16, 185, 129, 0.3);
@@ -411,6 +645,24 @@ QStatusBar { background: #060e0a; color: #6ee7b7; border-top: 1px solid #064e3b;
     const QString glassFrostLight = QStringLiteral(R"(
 QMainWindow { background: #f1f5f9; }
 QWidget { font-family: "SF Pro Display", "Inter", sans-serif; color: #0f172a; }
+QLabel#viewHeading { color: #0f172a; font-size: 26px; font-weight: 700; }
+QLabel#viewDescription { color: #64748b; font-size: 13px; }
+QLabel#localPathLabel { color: #334155; font-size: 12px; padding: 6px 10px; }
+QPushButton#driveCard {
+    background: rgba(255,255,255,0.72);
+    color: #0f172a;
+    border: 1px solid rgba(148,163,184,0.36);
+    border-radius: 14px;
+    text-align: left;
+    padding: 18px;
+    font-size: 13px;
+    font-weight: 600;
+}
+QPushButton#driveCard:hover {
+    background: rgba(255,255,255,0.94);
+    border-color: rgba(59,130,246,0.45);
+}
+QLabel#sessionNotice { color: #64748b; font-size: 11px; }
 QWidget#headerWidget {
     background: rgba(255, 255, 255, 0.95);
     border: 1px solid #cbd5e1;
@@ -467,6 +719,7 @@ QStatusBar { background: #f1f5f9; color: #475569; border-top: 1px solid #e2e8f0;
 )");
 
     // Register themes
+    m_themes.append({QStringLiteral("light_theme"), QStringLiteral("☀️ Light Theme"), lightTheme});
     m_themes.append({QStringLiteral("cyber_glass_dark"), QStringLiteral("💎 Cyber Glass Dark"), cyberGlassDark});
     m_themes.append({QStringLiteral("midnight_cyber"), QStringLiteral("🌙 Midnight Glass"), midnightCyber});
     m_themes.append({QStringLiteral("emerald_matrix"), QStringLiteral("🟩 Emerald Matrix"), emeraldGlass});

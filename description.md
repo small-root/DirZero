@@ -10,6 +10,8 @@
 
 ### Core Capabilities
 - **Zero-Config Mesh Discovery**: Interrogates local Tailscale daemon (`tailscale status --json`) to detect online peers, map hostnames, IPv4 addresses, and OS types.
+- **This PC Drive Browsing**: Shows mounted local drives and provides in-app folder navigation alongside the Tailnet machine view.
+- **Session-Only SSH Authentication**: Does not persist passwords or connection credentials; users initiate a fresh connection each app session.
 - **Port 22 SSH Reachability Probing**: Asynchronously probes TCP port 22 to separate general online nodes from SSH/SFTP-enabled hosts.
 - **Multi-Host Concurrent Browsing**: Renders individual machine cards in a responsive grid, allowing concurrent navigation across distinct remote file trees.
 - **Cross-Machine File Transfers**: Stream-based file and recursive directory copying/moving between any two machines on the mesh using buffered 64 KB chunks, without caching entire files to local disk.
@@ -48,8 +50,8 @@ DirZero/
 │   │   ├── AccessRule.hpp/.cpp     # Path matching & access permissions
 │   │   └── PermissionPolicy.hpp/.cpp # Pre-execution validation safety layer
 │   │
-│   ├── security/                   # Secure storage & credentials
-│   │   ├── CredentialStore.hpp/.cpp# Platform-specific JSON credential persistence & ~/.ssh key lookup
+│   ├── security/                   # SSH key discovery
+│   │   ├── SshKeyDiscovery.hpp/.cpp# Optional discovery of standard ~/.ssh key paths
 │   │
 │   ├── fs/                         # Remote filesystem modeling & libssh backend
 │   │   ├── RemoteEntry.hpp         # Plain metadata struct for remote files/directories
@@ -78,7 +80,7 @@ DirZero/
 │   │   ├── MachineAuthBar.hpp/.cpp # Inline authentication bar (user, password, key picker)
 │   │   ├── RemoteFileTreeView.hpp/.cpp # QTreeView subclass with custom drag preview & hotkeys
 │   │   ├── MachinePanelWidget.hpp/.cpp # Complete machine card controller & view
-│   │   └── Dir2ZeroWindow.hpp/.cpp # Top-level window, header metrics, bottom dock monitor
+│   │   └── Dir2ZeroWindow.hpp/.cpp # This PC drive browser, Tailnet view switcher, header & transfer dock
 │   │
 │   └── themes/                     # External fallback/reference stylesheets (.qss)
 ```

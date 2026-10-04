@@ -1,6 +1,6 @@
 #include "MachinePanelWidget.hpp"
 #include "Dir2ZeroWindow.hpp"
-#include "../security/CredentialStore.hpp"
+#include "../security/SshKeyDiscovery.hpp"
 #include "../core/PermissionPolicy.hpp"
 #include "../helpers/RemoteClipboard.hpp"
 #include "../workers/SFTPConnectWorker.hpp"
@@ -33,15 +33,7 @@ MachinePanelWidget::MachinePanelWidget(const MachineInfo& info,
         m_username = QDir::home().dirName();
     }
     if (m_keyPath.isEmpty()) {
-        m_keyPath = CredentialStore::getFirstAvailableSshKey();
-    }
-
-    // Load saved credentials if present
-    auto saved = CredentialStore::get(m_info.ip(), m_info.name());
-    if (saved.has_value()) {
-        if (!saved->username.isEmpty()) m_username = saved->username;
-        if (!saved->password.isEmpty()) m_password = saved->password;
-        if (!saved->keyPath.isEmpty()) m_keyPath = saved->keyPath;
+        m_keyPath = SshKeyDiscovery::firstAvailableKeyPath();
     }
 
     m_sftpManager = std::make_unique<SFTPManager>(
@@ -64,7 +56,9 @@ MachinePanelWidget::MachinePanelWidget(const MachineInfo& info,
 
 MachinePanelWidget::~MachinePanelWidget()
 {
-    disconnectMachine();
+    if (m_sftpManager) {
+        m_sftpManager->disconnectSession();
+    }
 }
 
 void MachinePanelWidget::setupUi()
@@ -110,6 +104,7 @@ void MachinePanelWidget::setupUi()
     m_btnAuthToggle = new QPushButton(QStringLiteral("🔑 Auth"), this);
     m_btnAuthToggle->setFixedHeight(28);
     m_btnAuthToggle->setMinimumWidth(68);
+    m_btnAuthToggle->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
     m_btnAuthToggle->setToolTip(QStringLiteral("Open authentication form to configure credentials"));
     connect(m_btnAuthToggle, &QPushButton::clicked, this, [this]() {
         m_authBar->setVisible(!m_authBar->isVisible());
@@ -119,6 +114,7 @@ void MachinePanelWidget::setupUi()
     m_btnRefresh = new QPushButton(QStringLiteral("↻ Refresh"), this);
     m_btnRefresh->setFixedHeight(28);
     m_btnRefresh->setMinimumWidth(78);
+    m_btnRefresh->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
     m_btnRefresh->setToolTip(QStringLiteral("Refresh directory listing (F5)"));
     connect(m_btnRefresh, &QPushButton::clicked, this, &MachinePanelWidget::reloadFilesystem);
     m_toolbarLayout->addWidget(m_btnRefresh);
@@ -126,6 +122,7 @@ void MachinePanelWidget::setupUi()
     m_btnRetry = new QPushButton(QStringLiteral("⟳ Connect"), this);
     m_btnRetry->setFixedHeight(28);
     m_btnRetry->setMinimumWidth(85);
+    m_btnRetry->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
     m_btnRetry->setVisible(false);
     connect(m_btnRetry, &QPushButton::clicked, this, &MachinePanelWidget::onActionRetryClicked);
     m_toolbarLayout->addWidget(m_btnRetry);
@@ -134,9 +131,11 @@ void MachinePanelWidget::setupUi()
     m_btnDisconnect->setObjectName(QStringLiteral("disconnect"));
     m_btnDisconnect->setFixedHeight(28);
     m_btnDisconnect->setMinimumWidth(88);
+    m_btnDisconnect->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
     m_btnDisconnect->setToolTip(QStringLiteral("Disconnect session and forget saved credentials"));
     connect(m_btnDisconnect, &QPushButton::clicked, this, &MachinePanelWidget::disconnectMachine);
     m_toolbarLayout->addWidget(m_btnDisconnect);
+    m_toolbarLayout->addStretch(1);
 
     m_mainLayout->addLayout(m_toolbarLayout);
 
@@ -150,14 +149,14 @@ void MachinePanelWidget::setupUi()
     m_btnNewFile->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     m_btnNewFile->setToolTip(QStringLiteral("Create a new file in the current directory"));
     connect(m_btnNewFile, &QPushButton::clicked, this, [this]() { createNewFile(); });
-    m_actionsLayout->addWidget(m_btnNewFile);
+    m_actionsLayout->addWidget(m_btnNewFile, 1);
 
     m_btnNewFolder = new QPushButton(QStringLiteral("📁 + New Folder"), this);
     m_btnNewFolder->setFixedHeight(32);
     m_btnNewFolder->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     m_btnNewFolder->setToolTip(QStringLiteral("Create a new directory in the current directory"));
     connect(m_btnNewFolder, &QPushButton::clicked, this, [this]() { createNewFolder(); });
-    m_actionsLayout->addWidget(m_btnNewFolder);
+    m_actionsLayout->addWidget(m_btnNewFolder, 1);
 
     m_btnPaste = new QPushButton(QStringLiteral("📥 Paste"), this);
     m_btnPaste->setFixedHeight(32);
@@ -165,18 +164,18 @@ void MachinePanelWidget::setupUi()
     m_btnPaste->setEnabled(false);
     m_btnPaste->setToolTip(QStringLiteral("Paste copied or cut items into current directory (Ctrl+V)"));
     connect(m_btnPaste, &QPushButton::clicked, this, &MachinePanelWidget::pasteClipboard);
-    m_actionsLayout->addWidget(m_btnPaste);
+    m_actionsLayout->addWidget(m_btnPaste, 1);
+    m_actionsLayout->addStretch(1);
 
     m_mainLayout->addLayout(m_actionsLayout);
 
     // In-App Authentication Bar
-    m_authBar = new MachineAuthBar(m_info.ip(), m_info.name(), this);
+    m_authBar = new MachineAuthBar(this);
     connect(m_authBar, &MachineAuthBar::authRequested, this, &MachinePanelWidget::onAuthRequested);
     connect(m_authBar, &MachineAuthBar::dismissed, this, [this]() { m_authBar->setVisible(false); });
     m_authBar->setVisible(false);
 
-    auto saved = CredentialStore::get(m_info.ip(), m_info.name());
-    m_authBar->loadCredentials(saved);
+    m_authBar->setDefaultKeyPath(m_keyPath);
     m_mainLayout->addWidget(m_authBar);
 
     // Tree View
@@ -212,8 +211,7 @@ void MachinePanelWidget::applyMachineData()
     m_ipLabel->setText(m_info.ip());
 
     if (m_info.sshAvailable()) {
-        setState(MachineState::OnlineSshOk);
-        startConnection();
+        setState(MachineState::AuthRequired, QStringLiteral("Enter your credentials to connect."));
     } else {
         setState(MachineState::OnlineSshUnavailable);
     }
@@ -337,12 +335,6 @@ void MachinePanelWidget::disconnectMachine()
         m_sftpManager->disconnectSession();
     }
 
-    // Forget saved credentials
-    CredentialStore::remove(m_info.ip());
-    if (!m_info.name().isEmpty()) {
-        CredentialStore::remove(m_info.name());
-    }
-
     m_password.clear();
     if (m_sftpManager) {
         m_sftpManager->setPassword(QString());
@@ -360,13 +352,13 @@ void MachinePanelWidget::disconnectMachine()
     setState(MachineState::AuthRequired, QStringLiteral("Disconnected. Please enter password to re-authenticate."));
     m_authBar->setVisible(true);
 
-    notifyStatus(QStringLiteral("[%1] Disconnected & credentials forgotten.").arg(m_info.name()));
+    notifyStatus(QStringLiteral("[%1] Disconnected. Sign in again to reconnect.").arg(m_info.name()));
 }
 
 void MachinePanelWidget::reloadFilesystem()
 {
     if (!isConnected()) {
-        startConnection();
+        m_authBar->setVisible(true);
         return;
     }
 
@@ -426,15 +418,11 @@ void MachinePanelWidget::onSftpError(const QString& err)
     }
 }
 
-void MachinePanelWidget::onAuthRequested(const QString& username, const QString& password, const QString& keyPath, bool remember)
+void MachinePanelWidget::onAuthRequested(const QString& username, const QString& password, const QString& keyPath)
 {
     m_username = username;
     m_password = password;
     m_keyPath = keyPath;
-
-    if (remember) {
-        CredentialStore::save(m_info.ip(), m_username, m_password, m_keyPath);
-    }
 
     m_sftpManager->setUsername(m_username);
     m_sftpManager->setPassword(m_password);
@@ -470,8 +458,7 @@ void MachinePanelWidget::onPortCheckResult(bool isOpen)
     m_btnRetry->setEnabled(true);
     if (isOpen) {
         m_info.setSshAvailable(true);
-        setState(MachineState::OnlineSshOk);
-        startConnection();
+        setState(MachineState::AuthRequired, QStringLiteral("SSH is available. Enter your credentials to connect."));
     } else {
         m_statusLabel->setText(QStringLiteral("⚠ PORT 22 STILL UNREACHABLE"));
         m_statusLabel->setStyleSheet(QStringLiteral("color: #f59e0b; font-weight: 700;"));

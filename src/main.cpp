@@ -4,7 +4,7 @@
 #include <QDir>
 #include "ui/Dir2ZeroWindow.hpp"
 #include "ui/ThemeManager.hpp"
-#include "security/CredentialStore.hpp"
+#include "security/SshKeyDiscovery.hpp"
 
 int main(int argc, char *argv[])
 {
@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
         QStringList() << QStringLiteral("k") << QStringLiteral("key"),
         QStringLiteral("Path to private key file (defaults to ~/.ssh/id_ed25519 or first found key)."),
         QStringLiteral("keypath"),
-        CredentialStore::getFirstAvailableSshKey()
+        SshKeyDiscovery::firstAvailableKeyPath()
     );
     parser.addOption(keyOption);
 
