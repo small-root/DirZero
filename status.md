@@ -50,10 +50,12 @@ DirZero has been completely rewritten from Python (PySide6 / Paramiko) to a high
 ---
 
 ## 3. What is Currently Being Done
-- Validated complete build with CMake (`cmake -B build -S . && cmake --build build`).
-- Fixed Qt keyword collisions (`signals` -> `workerSignals`) in worker threads and connection call sites.
-- Cleaned up Qt6 deprecation warnings on action/shortcut binding overloads.
-- Checked automated permission policy gates before file creation, folder creation, rename, delete, and cross-machine paste/drop.
+- Refactored `MachinePanelWidget` toolbar into a dedicated dual-row layout:
+  - **Row 1**: Current directory path display (`📁 ...`) and session buttons (`🔑 Auth`, `↻ Refresh`, `⟳ Connect`, `Disconnect`).
+  - **Row 2**: Distinct file action buttons (`📄 + New File`, `📁 + New Folder`, `📥 Paste`) with auto-expanding width, 32px height, and clear text/icons.
+- Enhanced `MachineAuthBar` inputs and buttons with 30px height, balanced padding, and responsive sizing.
+- Refined `QPushButton` typography and vertical padding across all 4 glassmorphic themes in `ThemeManager.cpp` to prevent text truncation/clipping.
+- Successfully built with 0 errors and 0 warnings (`cmake --build build`).
 
 ---
 

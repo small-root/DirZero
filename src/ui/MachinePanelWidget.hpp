@@ -97,6 +97,7 @@ private:
     QLabel* m_pathLabel;
 
     QHBoxLayout* m_toolbarLayout;
+    QHBoxLayout* m_actionsLayout;
     QPushButton* m_btnNewFile;
     QPushButton* m_btnNewFolder;
     QPushButton* m_btnPaste;

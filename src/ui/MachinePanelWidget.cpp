@@ -97,37 +97,19 @@ void MachinePanelWidget::setupUi()
     m_ipLabel->setObjectName(QStringLiteral("ipAddress"));
     m_mainLayout->addWidget(m_ipLabel);
 
-    // Toolbar
+    // 1. Session & Path Row
     m_toolbarLayout = new QHBoxLayout();
-    m_toolbarLayout->setContentsMargins(0, 4, 0, 4);
+    m_toolbarLayout->setContentsMargins(0, 4, 0, 2);
     m_toolbarLayout->setSpacing(6);
 
-    m_pathLabel = new QLabel(QStringLiteral("📁 Path: (Connecting...)"), this);
-    m_pathLabel->setStyleSheet(QStringLiteral("color: #94a3b8; font-size: 11px; font-weight: 500;"));
-    m_toolbarLayout->addWidget(m_pathLabel);
-    m_toolbarLayout->addStretch();
-
-    m_btnNewFile = new QPushButton(QStringLiteral("+ File"), this);
-    m_btnNewFile->setFixedHeight(26);
-    m_btnNewFile->setToolTip(QStringLiteral("Create a new file on this machine"));
-    connect(m_btnNewFile, &QPushButton::clicked, this, [this]() { createNewFile(); });
-    m_toolbarLayout->addWidget(m_btnNewFile);
-
-    m_btnNewFolder = new QPushButton(QStringLiteral("+ Folder"), this);
-    m_btnNewFolder->setFixedHeight(26);
-    m_btnNewFolder->setToolTip(QStringLiteral("Create a new folder on this machine"));
-    connect(m_btnNewFolder, &QPushButton::clicked, this, [this]() { createNewFolder(); });
-    m_toolbarLayout->addWidget(m_btnNewFolder);
-
-    m_btnPaste = new QPushButton(QStringLiteral("📥 Paste"), this);
-    m_btnPaste->setFixedHeight(26);
-    m_btnPaste->setEnabled(false);
-    m_btnPaste->setToolTip(QStringLiteral("Paste copied/cut item into this directory"));
-    connect(m_btnPaste, &QPushButton::clicked, this, &MachinePanelWidget::pasteClipboard);
-    m_toolbarLayout->addWidget(m_btnPaste);
+    m_pathLabel = new QLabel(QStringLiteral("📁 (Connecting...)"), this);
+    m_pathLabel->setStyleSheet(QStringLiteral("color: #38bdf8; font-size: 11px; font-weight: 600;"));
+    m_pathLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+    m_toolbarLayout->addWidget(m_pathLabel, 1);
 
     m_btnAuthToggle = new QPushButton(QStringLiteral("🔑 Auth"), this);
-    m_btnAuthToggle->setFixedHeight(26);
+    m_btnAuthToggle->setFixedHeight(28);
+    m_btnAuthToggle->setMinimumWidth(68);
     m_btnAuthToggle->setToolTip(QStringLiteral("Open authentication form to configure credentials"));
     connect(m_btnAuthToggle, &QPushButton::clicked, this, [this]() {
         m_authBar->setVisible(!m_authBar->isVisible());
@@ -135,24 +117,57 @@ void MachinePanelWidget::setupUi()
     m_toolbarLayout->addWidget(m_btnAuthToggle);
 
     m_btnRefresh = new QPushButton(QStringLiteral("↻ Refresh"), this);
-    m_btnRefresh->setFixedHeight(26);
+    m_btnRefresh->setFixedHeight(28);
+    m_btnRefresh->setMinimumWidth(78);
+    m_btnRefresh->setToolTip(QStringLiteral("Refresh directory listing (F5)"));
     connect(m_btnRefresh, &QPushButton::clicked, this, &MachinePanelWidget::reloadFilesystem);
     m_toolbarLayout->addWidget(m_btnRefresh);
 
     m_btnRetry = new QPushButton(QStringLiteral("⟳ Connect"), this);
-    m_btnRetry->setFixedHeight(26);
+    m_btnRetry->setFixedHeight(28);
+    m_btnRetry->setMinimumWidth(85);
     m_btnRetry->setVisible(false);
     connect(m_btnRetry, &QPushButton::clicked, this, &MachinePanelWidget::onActionRetryClicked);
     m_toolbarLayout->addWidget(m_btnRetry);
 
     m_btnDisconnect = new QPushButton(QStringLiteral("Disconnect"), this);
     m_btnDisconnect->setObjectName(QStringLiteral("disconnect"));
-    m_btnDisconnect->setFixedHeight(26);
+    m_btnDisconnect->setFixedHeight(28);
+    m_btnDisconnect->setMinimumWidth(88);
     m_btnDisconnect->setToolTip(QStringLiteral("Disconnect session and forget saved credentials"));
     connect(m_btnDisconnect, &QPushButton::clicked, this, &MachinePanelWidget::disconnectMachine);
     m_toolbarLayout->addWidget(m_btnDisconnect);
 
     m_mainLayout->addLayout(m_toolbarLayout);
+
+    // 2. Action Toolbar Row (New File, New Folder, Paste)
+    m_actionsLayout = new QHBoxLayout();
+    m_actionsLayout->setContentsMargins(0, 2, 0, 4);
+    m_actionsLayout->setSpacing(8);
+
+    m_btnNewFile = new QPushButton(QStringLiteral("📄 + New File"), this);
+    m_btnNewFile->setFixedHeight(32);
+    m_btnNewFile->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    m_btnNewFile->setToolTip(QStringLiteral("Create a new file in the current directory"));
+    connect(m_btnNewFile, &QPushButton::clicked, this, [this]() { createNewFile(); });
+    m_actionsLayout->addWidget(m_btnNewFile);
+
+    m_btnNewFolder = new QPushButton(QStringLiteral("📁 + New Folder"), this);
+    m_btnNewFolder->setFixedHeight(32);
+    m_btnNewFolder->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    m_btnNewFolder->setToolTip(QStringLiteral("Create a new directory in the current directory"));
+    connect(m_btnNewFolder, &QPushButton::clicked, this, [this]() { createNewFolder(); });
+    m_actionsLayout->addWidget(m_btnNewFolder);
+
+    m_btnPaste = new QPushButton(QStringLiteral("📥 Paste"), this);
+    m_btnPaste->setFixedHeight(32);
+    m_btnPaste->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    m_btnPaste->setEnabled(false);
+    m_btnPaste->setToolTip(QStringLiteral("Paste copied or cut items into current directory (Ctrl+V)"));
+    connect(m_btnPaste, &QPushButton::clicked, this, &MachinePanelWidget::pasteClipboard);
+    m_actionsLayout->addWidget(m_btnPaste);
+
+    m_mainLayout->addLayout(m_actionsLayout);
 
     // In-App Authentication Bar
     m_authBar = new MachineAuthBar(m_info.ip(), m_info.name(), this);

@@ -48,6 +48,7 @@ void MachineAuthBar::setupUi()
     row1->setSpacing(6);
 
     m_inputUser = new QLineEdit(this);
+    m_inputUser->setFixedHeight(30);
     m_inputUser->setPlaceholderText(QStringLiteral("Username"));
     m_inputUser->setText(QDir::home().dirName());
     row1->addWidget(m_inputUser, 1);
@@ -56,14 +57,15 @@ void MachineAuthBar::setupUi()
     passBox->setSpacing(0);
 
     m_inputPass = new QLineEdit(this);
+    m_inputPass->setFixedHeight(30);
     m_inputPass->setPlaceholderText(QStringLiteral("Password"));
     m_inputPass->setEchoMode(QLineEdit::Password);
     connect(m_inputPass, &QLineEdit::returnPressed, this, &MachineAuthBar::onSubmit);
     passBox->addWidget(m_inputPass);
 
     m_btnTogglePass = new QPushButton(QStringLiteral("👁"), this);
-    m_btnTogglePass->setFixedSize(26, 26);
-    m_btnTogglePass->setStyleSheet(QStringLiteral("QPushButton { border-left: none; border-top-right-radius: 4px; border-bottom-right-radius: 4px; font-size: 11px; }"));
+    m_btnTogglePass->setFixedSize(30, 30);
+    m_btnTogglePass->setStyleSheet(QStringLiteral("QPushButton { border-left: none; border-top-right-radius: 6px; border-bottom-right-radius: 6px; font-size: 13px; }"));
     connect(m_btnTogglePass, &QPushButton::clicked, this, &MachineAuthBar::onTogglePasswordVisibility);
     passBox->addWidget(m_btnTogglePass);
 
@@ -75,11 +77,13 @@ void MachineAuthBar::setupUi()
     row2->setSpacing(6);
 
     m_inputKey = new QLineEdit(this);
+    m_inputKey->setFixedHeight(30);
     m_inputKey->setPlaceholderText(QStringLiteral("Private Key (e.g. ~/.ssh/id_ed25519)"));
     row2->addWidget(m_inputKey, 1);
 
     m_btnBrowseKey = new QPushButton(QStringLiteral("📂 Browse..."), this);
-    m_btnBrowseKey->setFixedHeight(26);
+    m_btnBrowseKey->setFixedHeight(30);
+    m_btnBrowseKey->setMinimumWidth(90);
     connect(m_btnBrowseKey, &QPushButton::clicked, this, &MachineAuthBar::onBrowseKeyFile);
     row2->addWidget(m_btnBrowseKey);
 
@@ -96,8 +100,9 @@ void MachineAuthBar::setupUi()
     row3->addStretch();
 
     m_btnConnect = new QPushButton(QStringLiteral("🔑 Connect"), this);
-    m_btnConnect->setFixedHeight(26);
-    m_btnConnect->setStyleSheet(QStringLiteral("QPushButton { background: #2563eb; color: #ffffff; border: none; font-weight: 700; padding: 2px 14px; } QPushButton:hover { background: #1d4ed8; }"));
+    m_btnConnect->setFixedHeight(30);
+    m_btnConnect->setMinimumWidth(100);
+    m_btnConnect->setStyleSheet(QStringLiteral("QPushButton { background: #2563eb; color: #ffffff; border: none; font-weight: 700; font-size: 12px; padding: 4px 16px; border-radius: 6px; } QPushButton:hover { background: #1d4ed8; }"));
     connect(m_btnConnect, &QPushButton::clicked, this, &MachineAuthBar::onSubmit);
     row3->addWidget(m_btnConnect);
 

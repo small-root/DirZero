@@ -148,11 +148,11 @@ QLineEdit:focus {
 QPushButton {
     background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgba(37, 51, 77, 0.9), stop:1 rgba(26, 36, 56, 0.9));
     color: #e2e8f0;
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.14);
     border-radius: 6px;
-    padding: 5px 12px;
-    font-size: 11px;
-    font-weight: 700;
+    padding: 4px 10px;
+    font-size: 12px;
+    font-weight: 600;
 }
 
 QPushButton:hover {
@@ -343,8 +343,9 @@ QPushButton {
     color: #e2e8f0;
     border: 1px solid #334155;
     border-radius: 6px;
-    padding: 5px 12px;
-    font-weight: 700;
+    padding: 4px 10px;
+    font-size: 12px;
+    font-weight: 600;
 }
 QPushButton:hover { background: #2563eb; color: #ffffff; }
 QTreeView {
@@ -393,7 +394,7 @@ QLabel#ipAddress {
 }
 QFrame#authFrame { background: #091a13; border: 1px solid #065f46; border-radius: 10px; padding: 10px; }
 QLineEdit { background: #050f0b; color: #ecfdf5; border: 1px solid #065f46; border-radius: 6px; padding: 6px 10px; }
-QPushButton { background: #064e3b; color: #a7f3d0; border: 1px solid #059669; border-radius: 6px; padding: 5px 12px; font-weight: 700; }
+QPushButton { background: #064e3b; color: #a7f3d0; border: 1px solid #059669; border-radius: 6px; padding: 4px 10px; font-size: 12px; font-weight: 600; }
 QPushButton:hover { background: #059669; color: #ffffff; }
 QTreeView { background: #050f0b; color: #a7f3d0; border: 1px solid #064e3b; border-radius: 8px; }
 QTreeView::item:selected { background: #065f46; color: #ecfdf5; }
@@ -446,8 +447,9 @@ QPushButton {
     color: #1e293b;
     border: 1px solid #cbd5e1;
     border-radius: 6px;
-    padding: 5px 12px;
-    font-weight: 700;
+    padding: 4px 10px;
+    font-size: 12px;
+    font-weight: 600;
 }
 QPushButton:hover { background: #3b82f6; color: #ffffff; border-color: #2563eb; }
 QPushButton#disconnect { background: #fee2e2; color: #991b1b; border: 1px solid #f87171; }
